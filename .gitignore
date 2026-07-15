@@ -30,8 +30,18 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — never commit real secrets, but keep the example template
+.env
+.env.*
+!.env.example
+
+# local SQLite database (dev only)
+amcham.db
+amcham.db-shm
+amcham.db-wal
+
+# locally uploaded media (production uses Supabase Storage)
+/media
 
 # vercel
 .vercel

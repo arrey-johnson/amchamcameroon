@@ -1,0 +1,514 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   AmCham Cameroon — admin panel theme (light & dark).
+   Safe overrides on top of Payload's default theme.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --amcham-navy: #232e7d;
+  --amcham-navy-dark: #1a2260;
+  --amcham-red: #e30613;
+  --amcham-red-dark: #b8050f;
+  --amcham-green: #009640;
+  --amcham-gold: #ffe400;
+}
+
+/* Primary Payload buttons (Save / Create) → brand navy (never red = danger). */
+.btn--style-primary:not(.btn--icon-style-without-border),
+.form-submit .btn--style-primary {
+  --color: #fff;
+  background-color: var(--amcham-navy);
+  border-color: var(--amcham-navy);
+  color: #fff;
+}
+.btn--style-primary:not(.btn--icon-style-without-border):hover,
+.form-submit .btn--style-primary:hover {
+  background-color: var(--amcham-navy-dark);
+  border-color: var(--amcham-navy-dark);
+}
+
+/* ── Sidebar navigation — readable & well-designed in both themes ───────── */
+.nav .nav__link {
+  border-radius: 8px;
+  padding-block: 8px;
+  padding-inline: 10px;
+  margin-inline: 6px;
+  font-weight: 500;
+  color: var(--theme-elevation-800); /* adapts: dark on light, light on dark */
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.nav .nav__link:hover {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+}
+.nav .nav__link.active {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 var(--amcham-red);
+}
+.nav-group__label,
+.nav-group__toggle {
+  color: var(--theme-elevation-600);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Links & focus accents */
+a:where(.doc-controls a, .step-nav a):hover {
+  color: var(--amcham-red);
+}
+
+/* ── Login screen ──────────────────────────────────────────────────────── */
+.amcham-login-intro {
+  max-width: 520px;
+  margin: 0 auto 1.75rem;
+  text-align: center;
+}
+.amcham-login-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(35, 46, 125, 0.08);
+  color: var(--amcham-navy);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.amcham-login-star {
+  color: var(--amcham-gold);
+  -webkit-text-stroke: 0.5px #d9c200;
+}
+.amcham-login-title {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--amcham-navy);
+}
+.amcham-login-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--theme-elevation-600, #6b7280);
+}
+html[data-theme="dark"] .amcham-login-title { color: #fff; }
+html[data-theme="dark"] .amcham-login-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: #cdd4ff;
+}
+
+/* ── Dashboard + modal: shared theme tokens (built on Payload elevations) ─ */
+.amcham-dash,
+.amcham-modal {
+  --card: var(--theme-elevation-0, #fff);
+  --card-2: var(--theme-elevation-50, #f5f7fa);
+  --line: var(--theme-elevation-100, #e6e9f0);
+  --text: var(--theme-elevation-800, #1a1d24);
+  --muted: var(--theme-elevation-500, #8b90a0);
+  --accent: #2b39a6;
+  --accent-soft: rgba(43, 57, 166, 0.1);
+  --red: #e30613;
+  --red-soft: rgba(227, 6, 19, 0.1);
+  --green: #009640;
+  --green-soft: rgba(0, 150, 64, 0.12);
+  --amber: #b9770a;
+  --amber-soft: rgba(201, 138, 0, 0.14);
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 10px 26px -16px rgba(16, 24, 40, 0.22);
+}
+html[data-theme="dark"] .amcham-dash,
+html[data-theme="dark"] .amcham-modal {
+  --accent: #8ea2ff;
+  --accent-soft: rgba(142, 162, 255, 0.14);
+  --red: #ff6b73;
+  --red-soft: rgba(255, 107, 115, 0.14);
+  --green: #3ec77e;
+  --green-soft: rgba(62, 199, 126, 0.14);
+  --amber: #f0b64a;
+  --amber-soft: rgba(240, 182, 74, 0.16);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -18px rgba(0, 0, 0, 0.7);
+}
+
+.amcham-dash {
+  margin-bottom: 1.5rem;
+}
+
+/* Header */
+.amcham-dash__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+.amcham-dash__hello {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.amcham-dash__date {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.amcham-dash__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.amcham-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 0.95rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.amcham-btn--primary {
+  background: var(--amcham-red);
+  color: #fff;
+}
+.amcham-btn--primary:hover {
+  background: var(--amcham-red-dark);
+}
+.amcham-btn--primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.amcham-btn--ghost {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--line);
+}
+.amcham-btn--ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.amcham-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.amcham-theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Management sections */
+.amcham-sec {
+  margin-bottom: 1.75rem;
+}
+.amcham-sec__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+.amcham-sec__title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.amcham-sec__head .amcham-sec__title { margin: 0; }
+.amcham-sec__title::before {
+  content: "";
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--amcham-red);
+}
+.amcham-sec__link {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Management tiles (the CRUD launchpad) */
+.amcham-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+  gap: 0.75rem;
+}
+.amcham-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.amcham-tile:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.amcham-tile__icon {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.amcham-tile__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.amcham-tile__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.amcham-tile__count {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--card-2);
+  padding: 0 7px;
+  border-radius: 999px;
+}
+.amcham-tile__hint {
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+.amcham-tile__arrow {
+  flex: none;
+  color: var(--muted);
+}
+.amcham-tile:hover .amcham-tile__arrow { color: var(--accent); }
+
+/* Recent submissions */
+.amcham-inbox {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  overflow: hidden;
+}
+.amcham-inbox__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-top: 1px solid var(--line);
+  text-decoration: none;
+}
+.amcham-inbox__row:first-child { border-top: 0; }
+.amcham-inbox__row:hover { background: var(--card-2); }
+.amcham-inbox__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  flex: none;
+}
+.amcham-inbox__dot--contact { background: var(--accent); }
+.amcham-inbox__dot--membership { background: var(--red); }
+.amcham-inbox__dot--subscribe { background: var(--green); }
+.amcham-inbox__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.amcham-inbox__name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.amcham-inbox__sub {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+.amcham-inbox__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+.amcham-inbox__empty {
+  padding: 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.amcham-status {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.amcham-status--new { background: var(--accent-soft); color: var(--accent); }
+.amcham-status--in-review { background: var(--amber-soft); color: var(--amber); }
+.amcham-status--handled { background: var(--green-soft); color: var(--green); }
+
+/* ── Add-member modal ──────────────────────────────────────────────────── */
+.amcham-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(10, 12, 20, 0.55);
+}
+.amcham-modal__card {
+  width: 100%;
+  max-width: 460px;
+  max-height: 92vh;
+  overflow: auto;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
+}
+.amcham-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.35rem;
+  border-bottom: 1px solid var(--line);
+}
+.amcham-modal__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.amcham-modal__close {
+  display: inline-flex;
+  padding: 6px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.amcham-modal__close:hover { background: var(--card-2); color: var(--text); }
+.amcham-modal__body {
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.amcham-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.amcham-field > span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.amcham-field input,
+.amcham-field select {
+  padding: 0.55rem 0.7rem;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--card-2);
+  color: var(--text);
+  font-size: 0.88rem;
+  outline: none;
+}
+.amcham-field input:focus,
+.amcham-field select:focus { border-color: var(--accent); }
+.amcham-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.amcham-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+.amcham-modal__error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--red);
+  background: var(--red-soft);
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+}
+.amcham-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+.amcham-modal__success {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+.amcham-modal__check {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.amcham-modal__success-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.amcham-modal__success-text {
+  margin: 0.4rem 0 1.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Hide Payload's default dashboard cards — our dashboard replaces them.
+   (Payload renders them as the 2nd child of .dashboard; we keep only ours.) */
+.dashboard > *:not(.amcham-dash) {
+  display: none !important;
+}
