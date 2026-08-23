@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { anyone, anyStaff, editors } from "@/access";
+import { revalidateTags } from "@/hooks/revalidate";
 
 export const Newsletters: CollectionConfig = {
   slug: "newsletters",
@@ -14,6 +15,10 @@ export const Newsletters: CollectionConfig = {
     create: anyStaff,
     update: anyStaff,
     delete: editors,
+  },
+  hooks: {
+    afterChange: [revalidateTags("newsletters")],
+    afterDelete: [revalidateTags("newsletters")],
   },
   defaultSort: "-date",
   fields: [

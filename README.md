@@ -3,7 +3,8 @@
 The official website of the **American Chamber of Commerce in Cameroon (AmCham Cameroon)** — a premium, fully bilingual (English / French) site backed by a no-code admin panel where staff manage every banner, news item, event, newsletter, member, committee and page.
 
 - **Frontend:** Next.js 15 (App Router, React Server Components) + Tailwind CSS
-- **Backend / CMS:** Payload CMS 3 (runs inside the same Next.js app) + SQLite (swap-ready for Postgres)
+- **Backend / CMS:** Payload CMS 3 (runs inside the same Next.js app)
+- **Database & media:** Supabase (Postgres + Storage) — no local Postgres / pgAdmin required
 - **Bilingual:** `next-intl` (EN / FR), plus localized content fields in the CMS
 - **Email:** Resend (auto-reply + admin notification on every form submission)
 
@@ -15,11 +16,26 @@ The official website of the **American Chamber of Commerce in Cameroon (AmCham C
 
 ```bash
 npm install
+# .env must point at Supabase (see .env.example)
 npm run dev
 ```
 
 Open **http://localhost:3000** — the public site.
 Open **http://localhost:3000/admin** — the admin panel.
+
+### Database & storage (Supabase only)
+
+This project uses **Supabase Postgres + Storage**. Local Postgres / pgAdmin are not used.
+
+1. Copy `.env.example` → `.env` and fill Supabase values.
+2. SQL you can paste in the Supabase **SQL Editor** lives in [`supabase/migrations/`](supabase/migrations/).
+3. Schema syncs automatically when the app starts (`push: true`). Optional seed: `npm run seed`.
+
+```bash
+npx supabase --version          # CLI (also in devDependencies)
+npm run supabase:link           # once per machine
+npm run supabase:db -- "select 1;"
+```
 
 > ⚠️ The **first load of each page in `npm run dev` is slow** (5–20 s) because Next.js compiles routes on demand in development. This does **not** affect the deployed site — production pages respond in ~40–270 ms. Always judge performance from `npm run build && npm start`, never from `dev`.
 
@@ -43,18 +59,24 @@ Open **http://localhost:3000/admin** — the admin panel.
 | `npm run build` | Production build (run this to check real performance) |
 | `npm start` | Serve the production build |
 | `npm run seed` | Wipe & re-seed the database with bilingual demo/real content |
+| `npm run scrape:joomla` | Scrape public articles/events from the legacy amchamcam.org site |
+| `npm run import:joomla` | Import the scrape into Payload (`pages`, `news`, `events`) |
+| `npm run migrate:joomla` | Scrape then import in one step |
+| `npm run supabase:link` | Link this repo to the Supabase project (CLI) |
+| `npm run supabase:db` | Run SQL against the linked Supabase DB |
 | `npm run generate:types` | Regenerate `src/payload-types.ts` after changing collections |
 | `npm run generate:importmap` | Regenerate the admin import map after adding admin components |
 | `npm run lint` | ESLint |
 
-### Database setup (first run)
+### Database setup (first run / blank Supabase project)
 
-The database schema is applied via **migrations** (not dev auto-push, which stalls in non-interactive shells):
+1. In Supabase **SQL Editor**, run (in order):
+   - `supabase/migrations/20260820_amcham_app_role.sql`
+   - `supabase/migrations/20260820_payload_schema.sql` (skip if tables already exist)
+2. Ensure `.env` `DATABASE_URI` uses the `amcham_app` pooler user.
+3. Optionally: `npm run seed`
 
-```bash
-npx payload migrate      # create tables
-npm run seed             # populate content + admin user
-```
+Payload also auto-pushes schema on connect when `DATABASE_URI` is Postgres (`push: true`).
 
 ---
 
@@ -100,6 +122,17 @@ Everything on the public site is editable in the admin with no code — it's a f
 - **Inbox** → Contact / membership / subscription submissions
 
 All content is **bilingual**: use the **language switcher (top-right)** while editing to fill the English and French versions. Published changes appear on the site immediately (the site reads live from the same database).
+
+### Migrating from the old Joomla site
+
+Without hosting/DB access, public content can be scraped from [amchamcam.org](https://amchamcam.org/):
+
+```bash
+npm run scrape:joomla   # writes data/joomla-export/export.json
+npm run import:joomla   # upserts into Payload (does not wipe seed data)
+```
+
+This pulls About pages, newsletter/press articles, and public event write-ups. It skips Joomla demo junk. French translations and PDF newsletters still need manual work in `/admin`.
 
 ---
 

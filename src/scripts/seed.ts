@@ -108,7 +108,7 @@ async function seed() {
         { phone: "+237 679 50 34 34" },
       ],
       mapEmbedUrl:
-        "https://www.google.com/maps?q=Bonapriso,Douala,Cameroon&output=embed",
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d994.95!2d9.7015056!3d4.0228613!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x106113b9042b06cd%3A0x8489ac2bc594bbf8!2sAmCham%20Cameroon%20(American%20Chamber%20of%20Commerce%20in%20Cameroon)!5e0!3m2!1sen!2scm!4v1720000000000!5m2!1sen!2scm",
       whatsappNumber: "237677713705",
       whatsappMessage: "Hello AmCham Cameroon, I would like more information.",
       callNumber: "+237677713705",
@@ -254,16 +254,6 @@ async function seed() {
 
   // ── Ticker items ───────────────────────────────────────────────────────
   const tickerData = [
-    {
-      en: "AmCham Cameroon Business Forum 2026 — registration now open",
-      fr: "Forum d'affaires AmCham Cameroun 2026 — inscriptions ouvertes",
-      url: "/events",
-    },
-    {
-      en: "New: U.S.–Cameroon trade mission to Houston announced",
-      fr: "Nouveau : mission commerciale É.-U.–Cameroun à Houston annoncée",
-      url: "/events",
-    },
     {
       en: "Read our latest position paper on the business climate",
       fr: "Lisez notre dernière note de position sur le climat des affaires",
@@ -582,40 +572,9 @@ async function seed() {
   payload.logger.info("📰 News seeded");
 
   // ── Events ─────────────────────────────────────────────────────────────
+  // Only seed confirmed past events. Do not invent future dates — upcoming
+  // events should be added in the CMS when they are real.
   const eventData = [
-    {
-      slug: "business-forum-2026",
-      category: "conference",
-      variant: "navy" as const,
-      real: "delegation.jpg",
-      offsetDays: 35,
-      en: { title: "AmCham Cameroon Business Forum 2026", venue: "Douala Marriott Hotel, Douala", desc: [{ p: "The Chamber's flagship annual gathering of business leaders, policymakers and U.S. partners, around the theme of resilient trade and investment." }], priceM: "Free (members)", priceN: "50,000 FCFA" },
-      fr: { title: "Forum d'affaires AmCham Cameroun 2026", venue: "Hôtel Marriott Douala, Douala", desc: [{ p: "Le grand rendez-vous annuel de la Chambre réunissant dirigeants, décideurs et partenaires américains, autour du thème du commerce et de l'investissement résilients." }], priceM: "Gratuit (membres)", priceN: "50 000 FCFA" },
-    },
-    {
-      slug: "trade-mission-houston-2026",
-      category: "trade-mission",
-      variant: "green" as const,
-      offsetDays: 70,
-      en: { title: "Trade Mission to Houston, Texas", venue: "Houston, Texas, USA", desc: [{ p: "A delegation of Cameroonian energy and services companies will meet American partners, investors and industry leaders at a major sector gathering." }], priceM: "On request", priceN: "On request" },
-      fr: { title: "Mission commerciale à Houston, au Texas", venue: "Houston, Texas, États-Unis", desc: [{ p: "Une délégation d'entreprises camerounaises de l'énergie et des services rencontrera partenaires, investisseurs et leaders américains lors d'un grand rendez-vous sectoriel." }], priceM: "Sur demande", priceN: "Sur demande" },
-    },
-    {
-      slug: "executive-breakfast-march",
-      category: "networking",
-      variant: "red" as const,
-      offsetDays: 14,
-      en: { title: "Executive Networking Breakfast", venue: "Bonapriso, Douala", desc: [{ p: "An intimate breakfast for member executives to connect and exchange on the business outlook. Limited seats." }], priceM: "Free (members)", priceN: "25,000 FCFA" },
-      fr: { title: "Petit-déjeuner de réseautage exécutif", venue: "Bonapriso, Douala", desc: [{ p: "Un petit-déjeuner intimiste pour les cadres membres, afin d'échanger et de créer des liens sur les perspectives d'affaires. Places limitées." }], priceM: "Gratuit (membres)", priceN: "25 000 FCFA" },
-    },
-    {
-      slug: "customs-tax-workshop",
-      category: "training",
-      variant: "navy" as const,
-      offsetDays: 28,
-      en: { title: "Workshop: Navigating Customs & Tax", venue: "AmCham Offices, Douala", desc: [{ p: "A practical workshop for member companies on customs procedures and tax compliance, led by our Tax & Legal Committee." }], priceM: "Free (members)", priceN: "30,000 FCFA" },
-      fr: { title: "Atelier : maîtriser la douane et la fiscalité", venue: "Bureaux AmCham, Douala", desc: [{ p: "Un atelier pratique pour les entreprises membres sur les procédures douanières et la conformité fiscale, animé par notre Comité Fiscal & Juridique." }], priceM: "Gratuit (membres)", priceN: "30 000 FCFA" },
-    },
     {
       slug: "annual-gala-2025",
       category: "gala",

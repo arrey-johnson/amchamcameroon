@@ -42,7 +42,7 @@ export function buildNav(t: (key: string) => string): NavItem[] {
       children: [
         { label: t("news"), href: "/news" },
         { label: t("newsletters"), href: "/newsletters" },
-        { label: t("gallery"), href: "/gallery" },
+        // { label: t("gallery"), href: "/gallery" },
         { label: t("usNews"), href: "/us-news" },
       ],
     },

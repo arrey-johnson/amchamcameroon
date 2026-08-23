@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { anyStaff, editors } from "@/access";
+import { revalidateTags } from "@/hooks/revalidate";
 
 export const USNews: CollectionConfig = {
   slug: "us-news",
@@ -9,6 +10,10 @@ export const USNews: CollectionConfig = {
     useAsTitle: "title",
     defaultColumns: ["title", "source", "publishedAt", "approved"],
     description: "Curated U.S. trade & business headlines shown on the homepage.",
+  },
+  hooks: {
+    afterChange: [revalidateTags("us-news")],
+    afterDelete: [revalidateTags("us-news")],
   },
   access: {
     read: ({ req }) => {

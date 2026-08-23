@@ -99,6 +99,56 @@ html[data-theme="dark"] .amcham-login-badge {
   color: #cdd4ff;
 }
 
+/* Password show/hide eye toggle */
+.amcham-password-host {
+  position: relative !important;
+}
+.amcham-password-host input.amcham-password-input,
+.amcham-password-host input[type="password"],
+.amcham-password-host input[type="text"].amcham-password-input {
+  padding-inline-end: 2.75rem !important;
+}
+.amcham-password-eye {
+  position: absolute !important;
+  top: 50%;
+  right: 0.55rem;
+  transform: translateY(-50%);
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--theme-elevation-500, #8b90a0);
+  cursor: pointer;
+  z-index: 5;
+  line-height: 0;
+}
+.amcham-password-eye:hover,
+.amcham-password-eye:focus-visible {
+  color: var(--amcham-navy, #232e7d);
+  outline: none;
+  background: var(--theme-elevation-100, rgba(35, 46, 125, 0.08));
+}
+html[data-theme="dark"] .amcham-password-eye {
+  color: var(--theme-elevation-600, #a0a6b8);
+}
+html[data-theme="dark"] .amcham-password-eye:hover,
+html[data-theme="dark"] .amcham-password-eye:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Login form: Payload often wraps inputs deeper — pin eye to the input row */
+.template-default__wrap .amcham-password-eye,
+form .amcham-password-eye {
+  pointer-events: auto;
+}
+
 /* ── Dashboard + modal: shared theme tokens (built on Payload elevations) ─ */
 .amcham-dash,
 .amcham-modal {

@@ -25,12 +25,16 @@ export function mediaObj(media: number | Media | null | undefined): Media | null
   return null;
 }
 
-/** Strip a same-origin absolute prefix so next/image treats it as local. */
+/** Keep remote (Supabase) URLs absolute; strip only this site's origin. */
 function toRelative(url: string | null | undefined): string | null {
   if (!url) return null;
-  // "http://host/api/media/file/x.png" -> "/api/media/file/x.png"
-  const match = url.match(/^https?:\/\/[^/]+(\/.*)$/);
-  return match ? match[1] : url;
+  if (!/^https?:\/\//i.test(url)) return url;
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "");
+  if (site && url.startsWith(site)) {
+    const path = url.slice(site.length);
+    return path.startsWith("/") ? path : `/${path}`;
+  }
+  return url;
 }
 
 /** URL of a media doc, preferring a named size when available. */

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -9,12 +10,12 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Ticker } from "@/components/layout/Ticker";
 import { FloatingStack } from "@/components/layout/FloatingStack";
+import { NavigationProgress } from "@/components/layout/NavigationProgress";
 import type { AppLocale } from "@/lib/payload";
 import "@/app/globals.css";
 
-// The public site reads live from the CMS: render dynamically so every
-// admin change is reflected immediately, without redeploys.
-export const dynamic = "force-dynamic";
+// Cache pages briefly; CMS saves bust tags via hooks so edits still show quickly.
+export const revalidate = 60;
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const libre = Libre_Franklin({
@@ -44,6 +45,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: { default: title, template: `%s — AmCham Cameroon` },
     description,
+    icons: {
+      icon: [{ url: "/icon-48.png", type: "image/png", sizes: "48x48" }],
+      apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
+      shortcut: "/favicon-32.png",
+    },
     openGraph: { title, description, type: "website", locale },
   };
 }
@@ -87,6 +93,9 @@ export default async function LocaleLayout({ children, params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
         />
         <NextIntlClientProvider>
+          <Suspense fallback={null}>
+            <NavigationProgress />
+          </Suspense>
           <Ticker
             items={tickerItems.map((i) => ({ id: i.id, text: i.text, url: i.url }))}
             latestLabel={tCommon("latest")}
@@ -96,12 +105,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <main className="flex-1">{children}</main>
           <Footer settings={settings} />
           <FloatingStack
-            whatsappNumber={settings.whatsappNumber}
-            whatsappMessage={settings.whatsappMessage}
-            callNumber={settings.callNumber}
             labels={{
-              whatsapp: tCommon("chatWhatsApp"),
-              call: tCommon("callUs"),
               backToTop: tCommon("backToTop"),
             }}
           />

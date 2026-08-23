@@ -95,6 +95,7 @@ export async function Header({ settings }: { settings: Setting }) {
               <div key={item.href} className="group relative">
                 <Link
                   href={item.href}
+                  prefetch
                   className="flex items-center gap-1 rounded-md px-3 py-2 text-[13.5px] font-semibold text-ink transition-colors hover:text-red"
                 >
                   {item.label}
@@ -106,6 +107,7 @@ export async function Header({ settings }: { settings: Setting }) {
                       <Link
                         key={child.href}
                         href={child.href}
+                        prefetch
                         className="block rounded-md px-3 py-2 text-[13px] font-medium text-ink-soft transition-colors hover:bg-surface-alt hover:text-navy"
                       >
                         {child.label}

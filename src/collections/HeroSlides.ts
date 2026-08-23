@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { activeOrStaff, anyStaff, editors } from "@/access";
+import { revalidateTags } from "@/hooks/revalidate";
 
 export const HeroSlides: CollectionConfig = {
   slug: "hero-slides",
@@ -16,6 +17,10 @@ export const HeroSlides: CollectionConfig = {
     update: anyStaff,
     delete: editors,
   },
+  hooks: {
+    afterChange: [revalidateTags("hero-slides")],
+    afterDelete: [revalidateTags("hero-slides")],
+  },
   defaultSort: "order",
   fields: [
     { name: "title", type: "text", required: true, localized: true },
@@ -25,7 +30,10 @@ export const HeroSlides: CollectionConfig = {
       type: "upload",
       relationTo: "media",
       required: true,
-      admin: { description: "Recommended: 1920×900 or larger." },
+      admin: {
+        description:
+          "Recommended: 1920×1080 or larger landscape. Faces should sit in the upper half of the photo — the site crops from the top so heads stay visible on desktop.",
+      },
     },
     {
       type: "row",

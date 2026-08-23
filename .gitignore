@@ -43,6 +43,18 @@ amcham.db-wal
 # locally uploaded media (production uses Supabase Storage)
 /media
 
+# scraped Joomla export (regenerate with npm run scrape:joomla)
+/data/joomla-export/
+
+# local logo/download scratch (not shipped; regenerate via scripts)
+/data/member-logos/
+/data/hero-uploads/
+/data/hero-fill-log.txt
+
+# local tooling noise
+npm-install.log
+.supabase/
+
 # vercel
 .vercel
 

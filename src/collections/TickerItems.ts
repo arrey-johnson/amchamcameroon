@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { activeOrStaff, anyStaff, editors } from "@/access";
+import { revalidateTags } from "@/hooks/revalidate";
 
 export const TickerItems: CollectionConfig = {
   slug: "ticker-items",
@@ -15,6 +16,10 @@ export const TickerItems: CollectionConfig = {
     create: anyStaff,
     update: anyStaff,
     delete: editors,
+  },
+  hooks: {
+    afterChange: [revalidateTags("ticker-items")],
+    afterDelete: [revalidateTags("ticker-items")],
   },
   defaultSort: "order",
   fields: [

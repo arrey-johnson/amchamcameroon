@@ -5,6 +5,7 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import ThemeToggle from "./ThemeToggle";
 import AddMemberButton from "./AddMemberButton";
+import LogoutButton from "./LogoutButton";
 
 type Coll = Parameters<Awaited<ReturnType<typeof getPayload>>["count"]>[0]["collection"];
 type PL = Awaited<ReturnType<typeof getPayload>>;
@@ -111,6 +112,7 @@ export default async function BeforeDashboard() {
             View website
           </a>
           <AddMemberButton />
+          <LogoutButton />
         </div>
       </header>
 

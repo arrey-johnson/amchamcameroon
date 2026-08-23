@@ -40,7 +40,7 @@ export function HeroSlider({ slides }: { slides: HeroSlideData[] }) {
 
   return (
     <section
-      className="relative h-[540px] overflow-hidden bg-navy sm:h-[600px]"
+      className="relative h-[520px] overflow-hidden bg-navy sm:h-[600px] lg:h-[680px] xl:h-[720px]"
       aria-roledescription="carousel"
       onMouseEnter={() => (paused.current = true)}
       onMouseLeave={() => (paused.current = false)}
@@ -57,7 +57,8 @@ export function HeroSlider({ slides }: { slides: HeroSlideData[] }) {
             fill
             priority={i === 0}
             sizes="100vw"
-            className="object-cover"
+            // Bias crop toward the upper third so faces stay in frame on wide desktop banners
+            className="object-cover object-[center_20%] sm:object-[center_18%] lg:object-[center_15%]"
           />
           {/* Legibility gradient */}
           <div className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/55 to-navy/15" aria-hidden />

@@ -18,11 +18,11 @@ export function LogoWall({ members }: { members: Member[] }) {
             aria-hidden={i >= withLogos.length}
           >
             <Image
-              src={mediaUrl(member.logo, "thumbnail")!}
+              src={mediaUrl(member.logo)!}
               alt={mediaObj(member.logo)?.alt || member.name}
-              width={140}
-              height={72}
-              className="max-h-16 w-auto object-contain opacity-70 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+              width={160}
+              height={80}
+              className="max-h-14 w-auto object-contain opacity-80 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 sm:max-h-16"
             />
           </div>
         ))}

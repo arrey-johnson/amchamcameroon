@@ -4,19 +4,26 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node scripts/quiet-next.mjs dev",
+    "build": "node scripts/quiet-next.mjs build",
+    "start": "node scripts/quiet-next.mjs start",
     "lint": "eslint",
     "payload": "payload",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
-    "seed": "payload run src/scripts/seed.ts"
+    "seed": "payload run src/scripts/seed.ts",
+    "scrape:joomla": "tsx src/scripts/scrape-joomla.ts",
+    "import:joomla": "payload run src/scripts/import-joomla.ts",
+    "migrate:joomla": "npm run scrape:joomla && npm run import:joomla",
+    "supabase": "supabase",
+    "supabase:link": "supabase link --project-ref ibzobgpwprzxdchbjjju",
+    "supabase:db": "supabase db query --linked"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.86.0",
     "@payloadcms/db-sqlite": "^3.86.0",
     "@payloadcms/next": "^3.86.0",
+    "@payloadcms/plugin-cloud-storage": "^3.86.0",
     "@payloadcms/richtext-lexical": "^3.86.0",
     "@payloadcms/storage-s3": "^3.86.0",
     "graphql": "^16.14.2",
@@ -34,9 +41,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cheerio": "^1.2.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.20",
+    "simple-icons": "^13.21.0",
+    "supabase": "^2.115.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

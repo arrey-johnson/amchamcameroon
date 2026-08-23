@@ -1,5 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { anyone, editors } from "@/access";
+import { revalidateGlobal } from "@/hooks/revalidate";
 
 export const Settings: GlobalConfig = {
   slug: "settings",
@@ -10,6 +11,9 @@ export const Settings: GlobalConfig = {
   access: {
     read: anyone,
     update: editors,
+  },
+  hooks: {
+    afterChange: [revalidateGlobal("settings")],
   },
   fields: [
     {
@@ -29,7 +33,14 @@ export const Settings: GlobalConfig = {
               type: "array",
               fields: [{ name: "phone", type: "text", required: true }],
             },
-            { name: "mapEmbedUrl", type: "text", admin: { description: "Google Maps embed URL for the contact page." } },
+            {
+              name: "mapEmbedUrl",
+              type: "text",
+              admin: {
+                description:
+                  "Google Maps embed URL for the contact page (AmCham office: https://maps.app.goo.gl/MfHah3ovtaYFErDFA).",
+              },
+            },
           ],
         },
         {

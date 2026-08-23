@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { anyone, anyStaff, editors } from "@/access";
+import { revalidateTags } from "@/hooks/revalidate";
 
 export const Members: CollectionConfig = {
   slug: "members",
@@ -14,6 +15,10 @@ export const Members: CollectionConfig = {
     create: anyStaff,
     update: anyStaff,
     delete: editors,
+  },
+  hooks: {
+    afterChange: [revalidateTags("members")],
+    afterDelete: [revalidateTags("members")],
   },
   defaultSort: "order",
   fields: [

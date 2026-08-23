@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { anyStaff, editors, publishedOrStaff } from "@/access";
+import { revalidateTags } from "@/hooks/revalidate";
 
 export const Pages: CollectionConfig = {
   slug: "pages",
@@ -14,6 +15,10 @@ export const Pages: CollectionConfig = {
     create: anyStaff,
     update: anyStaff,
     delete: editors,
+  },
+  hooks: {
+    afterChange: [revalidateTags("pages")],
+    afterDelete: [revalidateTags("pages")],
   },
   versions: { drafts: true },
   fields: [

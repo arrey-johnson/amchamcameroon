@@ -1,5 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { anyone, anyStaff, editors } from "@/access";
+import { revalidateTags } from "@/hooks/revalidate";
 
 export const GalleryAlbums: CollectionConfig = {
   slug: "gallery-albums",
@@ -14,6 +15,10 @@ export const GalleryAlbums: CollectionConfig = {
     create: anyStaff,
     update: anyStaff,
     delete: editors,
+  },
+  hooks: {
+    afterChange: [revalidateTags("gallery-albums")],
+    afterDelete: [revalidateTags("gallery-albums")],
   },
   defaultSort: "-date",
   fields: [

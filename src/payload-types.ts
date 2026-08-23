@@ -156,7 +156,7 @@ export interface HeroSlide {
   title: string;
   subtitle?: string | null;
   /**
-   * Recommended: 1920×900 or larger.
+   * Recommended: 1920×1080 or larger landscape. Faces should sit in the upper half of the photo — the site crops from the top so heads stay visible on desktop.
    */
   image: number | Media;
   ctaLabel?: string | null;
@@ -1043,7 +1043,7 @@ export interface Setting {
       }[]
     | null;
   /**
-   * Google Maps embed URL for the contact page.
+   * Google Maps embed URL for the contact page (AmCham office: https://maps.app.goo.gl/MfHah3ovtaYFErDFA).
    */
   mapEmbedUrl?: string | null;
   /**

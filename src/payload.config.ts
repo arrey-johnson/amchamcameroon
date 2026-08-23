@@ -4,8 +4,10 @@ import { buildConfig } from "payload";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { s3Storage } from "@payloadcms/storage-s3";
+import { cloudStoragePlugin } from "@payloadcms/plugin-cloud-storage";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import sharp from "sharp";
+import { supabaseStorageAdapter } from "@/lib/supabaseStorage";
 
 import { Users } from "@/collections/Users";
 import { Media } from "@/collections/Media";
@@ -28,14 +30,17 @@ const dirname = path.dirname(filename);
 
 const databaseURI = process.env.DATABASE_URI || "file:./amcham.db";
 const usePostgres = databaseURI.startsWith("postgres");
+const isLocalPostgres = /localhost|127\.0\.0\.1/.test(databaseURI);
 
-// Local dev → SQLite (zero-setup). Production (Supabase) → Postgres.
-// The adapter is chosen automatically from DATABASE_URI.
+// Local file → SQLite. postgres:// → Postgres (Supabase in this project).
 const db = usePostgres
   ? postgresAdapter({
-      pool: { connectionString: databaseURI },
-      // Auto-sync the schema on connect so no manual migration step is needed
-      // on Vercel. (Use a Supabase "Session" connection string — it supports DDL.)
+      pool: {
+        connectionString: databaseURI,
+        // Supabase pooler presents a cert chain Node's pg driver rejects as
+        // self-signed when sslmode=require is treated as verify-full.
+        ssl: isLocalPostgres ? undefined : { rejectUnauthorized: false },
+      },
       push: true,
     })
   : sqliteAdapter({
@@ -45,32 +50,63 @@ const db = usePostgres
       client: { url: databaseURI },
     });
 
-// Store uploads in Supabase Storage (S3-compatible) when configured — required
-// on Vercel, whose filesystem is read-only/ephemeral. Falls back to local disk
-// for development when S3_BUCKET is not set.
-const storagePlugins = process.env.S3_BUCKET
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabaseBucket = process.env.SUPABASE_STORAGE_BUCKET || "media";
+
+// Prefer Supabase Storage REST (service role). Fall back to S3-compatible keys
+// if those are set instead. Local disk is used when neither is configured.
+const storagePlugins = supabaseUrl && supabaseServiceKey
   ? [
-      s3Storage({
-        collections: { media: true },
-        bucket: process.env.S3_BUCKET,
-        config: {
-          endpoint: process.env.S3_ENDPOINT,
-          region: process.env.S3_REGION || "us-east-1",
-          forcePathStyle: true,
-          credentials: {
-            accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
-            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+      cloudStoragePlugin({
+        collections: {
+          media: {
+            adapter: supabaseStorageAdapter({
+              url: supabaseUrl,
+              serviceRoleKey: supabaseServiceKey,
+              bucket: supabaseBucket,
+            }),
+            disableLocalStorage: true,
+            disablePayloadAccessControl: true,
           },
         },
       }),
     ]
-  : [];
+  : process.env.S3_BUCKET
+    ? [
+        s3Storage({
+          collections: {
+            media: {
+              disablePayloadAccessControl: true,
+              generateFileURL: ({ filename, prefix }) => {
+                const key = [prefix, filename].filter(Boolean).join("/");
+                return `${process.env.S3_ENDPOINT?.replace(/\/s3$/, "")}/object/public/${process.env.S3_BUCKET}/${key}`;
+              },
+            },
+          },
+          bucket: process.env.S3_BUCKET,
+          config: {
+            endpoint: process.env.S3_ENDPOINT,
+            region: process.env.S3_REGION || "eu-central-1",
+            forcePathStyle: true,
+            credentials: {
+              accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
+              secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+            },
+          },
+        }),
+      ]
+    : [];
 
 export default buildConfig({
   admin: {
     user: Users.slug,
     meta: {
       titleSuffix: " — AmCham Cameroon Admin",
+      icons: [
+        { type: "image/png", rel: "icon", url: "/favicon-32.png" },
+        { type: "image/png", rel: "apple-touch-icon", url: "/apple-icon.png" },
+      ],
     },
     components: {
       graphics: {
