@@ -1,0 +1,22 @@
+/** Locale-agnostic paths of every top-level public page. */
+export const SITE_PATHS = [
+  "",
+  "/about/who-we-are",
+  "/about/vision-mission",
+  "/about/word-from-the-us-embassy",
+  "/about/word-from-the-president",
+  "/about/board",
+  "/about/executive",
+  "/membership",
+  "/membership/categories",
+  "/membership/directory",
+  "/membership/apply",
+  "/committees",
+  "/events",
+  "/news",
+  "/newsletters",
+  "/gallery",
+  "/us-news",
+  "/resources",
+  "/contact",
+] as const;

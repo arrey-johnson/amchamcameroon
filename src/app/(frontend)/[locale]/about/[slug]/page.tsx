@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { setRequestLocale } from "next-intl/server";
 import { PageHero } from "@/components/PageHero";
 import { RichText } from "@/components/RichText";
 import { getPage } from "@/lib/queries";
 import { mediaObj, mediaUrl } from "@/lib/utils";
 import type { AppLocale } from "@/lib/payload";
+import { slugParams } from "@/lib/staticParams";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
+
+export function generateStaticParams() {
+  return slugParams("pages");
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -21,6 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AboutPage({ params }: Props) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const page = await getPage(locale as AppLocale, slug);
   if (!page) notFound();
 

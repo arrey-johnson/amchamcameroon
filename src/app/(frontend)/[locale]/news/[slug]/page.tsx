@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { RichText } from "@/components/RichText";
 import { NewsCard } from "@/components/cards/NewsCard";
 import { getLatestNews, getNewsArticle } from "@/lib/queries";
 import { formatDate, mediaObj, mediaUrl } from "@/lib/utils";
 import type { AppLocale } from "@/lib/payload";
+import { slugParams } from "@/lib/staticParams";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
+
+export function generateStaticParams() {
+  return slugParams("news");
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -28,6 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NewsArticlePage({ params }: Props) {
   const { locale: raw, slug } = await params;
+  setRequestLocale(raw);
   const locale = raw as AppLocale;
   const article = await getNewsArticle(locale, slug);
   if (!article) notFound();

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHero } from "@/components/PageHero";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { getGalleryAlbums } from "@/lib/queries";
@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function GalleryPage({ params }: Props) {
   const { locale: raw } = await params;
+  setRequestLocale(raw);
   const locale = raw as AppLocale;
   const t = await getTranslations({ locale, namespace: "gallery" });
   const albums = await getGalleryAlbums(locale);

@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { PageHero } from "@/components/PageHero";
 import { RichText } from "@/components/RichText";
 import { getCommittee } from "@/lib/queries";
 import type { AppLocale } from "@/lib/payload";
+import { slugParams } from "@/lib/staticParams";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
+
+export function generateStaticParams() {
+  return slugParams("committees");
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -18,6 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CommitteePage({ params }: Props) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const committee = await getCommittee(locale as AppLocale, slug);
   if (!committee) notFound();
 

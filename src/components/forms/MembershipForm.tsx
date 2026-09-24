@@ -1,15 +1,16 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { submitMembership, type FormState } from "@/app/actions";
+import { useUrlQuery } from "@/components/useUrlQuery";
 
 const initial: FormState = { status: "idle" };
 
 const inputCls =
   "w-full rounded-md border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition-colors focus:border-navy";
 
-export function MembershipForm({ defaultCategory }: { defaultCategory?: string }) {
+export function MembershipForm() {
   const t = useTranslations("forms");
   const tMember = useTranslations("membership");
   const locale = useLocale();
@@ -24,9 +25,15 @@ export function MembershipForm({ defaultCategory }: { defaultCategory?: string }
     name: "",
     email: "",
     phone: "",
-    category: defaultCategory || "corporate",
+    category: "corporate",
     motivation: "",
   });
+
+  const [query, sync] = useUrlQuery();
+  const queryCategory = query.get("category");
+  useEffect(() => {
+    if (queryCategory) setValues((v) => ({ ...v, category: queryCategory }));
+  }, [queryCategory]);
 
   const set = (key: keyof typeof values) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setValues((v) => ({ ...v, [key]: e.target.value }));
@@ -51,6 +58,7 @@ export function MembershipForm({ defaultCategory }: { defaultCategory?: string }
 
   return (
     <form action={action} className="rounded-xl border border-surface-alt bg-white p-6 shadow-sm sm:p-8">
+      {sync}
       <input type="hidden" name="locale" value={locale} />
       <input type="text" name="website_hp" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 

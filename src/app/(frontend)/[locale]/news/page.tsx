@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
-import { PageHero } from "@/components/PageHero";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NewsCard } from "@/components/cards/NewsCard";
-import { Reveal } from "@/components/Reveal";
+import { NewsExplorer } from "@/components/news/NewsExplorer";
 import { getLatestNews } from "@/lib/queries";
 import type { AppLocale } from "@/lib/payload";
+import type { News } from "@/payload-types";
 
 type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ category?: string }>;
 };
 
 const CATEGORIES = ["news", "press-release", "op-ed", "policy"] as const;
@@ -20,60 +18,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: t("title") };
 }
 
-export default async function NewsPage({ params, searchParams }: Props) {
+export default async function NewsPage({ params }: Props) {
   const { locale: raw } = await params;
+  setRequestLocale(raw);
   const locale = raw as AppLocale;
-  const { category } = await searchParams;
 
   const t = await getTranslations({ locale, namespace: "news" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
-  const articles = await getLatestNews(locale, 30, category);
+
+  // Latest overall plus latest per category, so each filter tab is full
+  // even though filtering happens in the browser.
+  const lists = await Promise.all([
+    getLatestNews(locale, 30),
+    ...CATEGORIES.map((cat) => getLatestNews(locale, 30, cat)),
+  ]);
+  const byId = new Map<number, News>();
+  for (const article of lists.flat()) byId.set(article.id, article);
+  const articles = [...byId.values()].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
 
   return (
-    <>
-      <PageHero title={t("title")} intro={t("intro")}>
-        <div className="mt-8 flex flex-wrap gap-2">
-          <Link
-            href="/news"
-            className={`rounded-full px-4 py-2 text-[13px] font-bold transition-colors ${
-              !category ? "bg-white text-navy" : "border border-white/30 text-white hover:bg-white/10"
-            }`}
-          >
-            {tCommon("all")}
-          </Link>
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat}
-              href={`/news?category=${cat}`}
-              className={`rounded-full px-4 py-2 text-[13px] font-bold transition-colors ${
-                category === cat ? "bg-white text-navy" : "border border-white/30 text-white hover:bg-white/10"
-              }`}
-            >
-              {t(`categories.${cat}`)}
-            </Link>
-          ))}
-        </div>
-      </PageHero>
-
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        {articles.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {articles.map((article, i) => (
-              <Reveal key={article.id} delay={(i % 3) * 80}>
-                <NewsCard
-                  article={article}
-                  locale={locale}
-                  categoryLabel={t(`categories.${article.category}`)}
-                />
-              </Reveal>
-            ))}
-          </div>
-        ) : (
-          <p className="rounded-lg bg-surface-alt p-10 text-center text-sm text-ink-soft">
-            {tCommon("noResults")}
-          </p>
-        )}
-      </div>
-    </>
+    <NewsExplorer
+      title={t("title")}
+      intro={t("intro")}
+      allLabel={tCommon("all")}
+      emptyLabel={tCommon("noResults")}
+      categories={CATEGORIES.map((cat) => ({ value: cat, label: t(`categories.${cat}`) }))}
+      items={articles.map((article) => ({
+        id: article.id,
+        category: article.category,
+        node: (
+          <NewsCard
+            article={article}
+            locale={locale}
+            categoryLabel={t(`categories.${article.category}`)}
+          />
+        ),
+      }))}
+    />
   );
 }

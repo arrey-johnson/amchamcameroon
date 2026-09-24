@@ -40,6 +40,9 @@ const db = usePostgres
         // Supabase pooler presents a cert chain Node's pg driver rejects as
         // self-signed when sslmode=require is treated as verify-full.
         ssl: isLocalPostgres ? undefined : { rejectUnauthorized: false },
+        // Session pooler caps clients at 15; `next build` prerenders in parallel
+        // workers, each with its own pool.
+        max: process.env.NEXT_PHASE === "phase-production-build" ? 2 : 10,
       },
       push: true,
     })

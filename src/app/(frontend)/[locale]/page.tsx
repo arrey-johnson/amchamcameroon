@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { NewsTabs } from "@/components/home/NewsTabs";
@@ -36,6 +36,7 @@ export default async function HomePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale: raw } = await params;
+  setRequestLocale(raw);
   const locale = raw as AppLocale;
 
   const [slides, news, events, usNews, members, settings, t, tCommon, whoWeAre] =

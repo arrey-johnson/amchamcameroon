@@ -1,27 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getPayloadClient } from "@/lib/payload";
-
-const STATIC_PATHS = [
-  "",
-  "/about/who-we-are",
-  "/about/vision-mission",
-  "/about/word-from-the-us-embassy",
-  "/about/word-from-the-president",
-  "/about/board",
-  "/about/executive",
-  "/membership",
-  "/membership/categories",
-  "/membership/directory",
-  "/membership/apply",
-  "/committees",
-  "/events",
-  "/news",
-  "/newsletters",
-  "/gallery",
-  "/us-news",
-  "/resources",
-  "/contact",
-];
+import { SITE_PATHS as STATIC_PATHS } from "@/lib/sitePaths";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";

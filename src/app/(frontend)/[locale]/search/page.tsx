@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { PageHero } from "@/components/PageHero";
 import { SearchBox } from "@/components/SearchBox";
@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SearchPage({ params, searchParams }: Props) {
   const { locale: raw } = await params;
+  setRequestLocale(raw);
   const locale = raw as AppLocale;
   const { q } = await searchParams;
   const t = await getTranslations({ locale, namespace: "search" });

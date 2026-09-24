@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
   // Warm static routes in the client router. Keep dynamic at 0 so Payload Admin
   // stays fresh (Payload warns against non-zero dynamic staleTimes).
   experimental: {
+    // Limit parallel prerender workers so their DB pools fit the Supabase pooler.
+    cpus: 4,
     staleTimes: {
       dynamic: 0,
       static: 180,

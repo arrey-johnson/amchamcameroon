@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Inter, Libre_Franklin } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { getSettings, getTickerItems } from "@/lib/queries";
@@ -11,6 +11,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Ticker } from "@/components/layout/Ticker";
 import { FloatingStack } from "@/components/layout/FloatingStack";
 import { NavigationProgress } from "@/components/layout/NavigationProgress";
+import { RoutePrefetcher } from "@/components/layout/RoutePrefetcher";
 import type { AppLocale } from "@/lib/payload";
 import "@/app/globals.css";
 
@@ -54,9 +55,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
+  setRequestLocale(locale);
 
   const [settings, tickerItems, tCommon] = await Promise.all([
     getSettings(locale as AppLocale),
@@ -87,7 +93,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} className={`${inter.variable} ${libre.variable}`}>
-      <body className="flex min-h-screen flex-col">
+      <body className="flex min-h-screen flex-col" suppressHydrationWarning>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
@@ -96,6 +102,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <Suspense fallback={null}>
             <NavigationProgress />
           </Suspense>
+          <RoutePrefetcher />
           <Ticker
             items={tickerItems.map((i) => ({ id: i.id, text: i.text, url: i.url }))}
             latestLabel={tCommon("latest")}

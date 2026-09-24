@@ -2,18 +2,16 @@
 
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { useSearchParams } from "next/navigation";
 
 export function LanguageToggle({ className = "" }: { className?: string }) {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const switchTo = (next: "en" | "fr") => {
     if (next === locale) return;
-    const qs = searchParams.toString();
-    router.replace(qs ? `${pathname}?${qs}` : pathname, { locale: next });
+    const qs = window.location.search;
+    router.replace(`${pathname}${qs}`, { locale: next });
   };
 
   return (
