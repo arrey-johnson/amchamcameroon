@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NewsCard } from "@/components/cards/NewsCard";
 import { NewsExplorer } from "@/components/news/NewsExplorer";
-import { getLatestNews } from "@/lib/queries";
+import { getLatestNews, getNewsWithCover } from "@/lib/queries";
+import { coverFirst, mediaUrl } from "@/lib/utils";
 import type { AppLocale } from "@/lib/payload";
 import type { News } from "@/payload-types";
 
@@ -29,13 +30,17 @@ export default async function NewsPage({ params }: Props) {
   // Latest overall plus latest per category, so each filter tab is full
   // even though filtering happens in the browser.
   const lists = await Promise.all([
+    getNewsWithCover(locale),
     getLatestNews(locale, 30),
     ...CATEGORIES.map((cat) => getLatestNews(locale, 30, cat)),
   ]);
   const byId = new Map<number, News>();
   for (const article of lists.flat()) byId.set(article.id, article);
-  const articles = [...byId.values()].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  const articles = coverFirst(
+    [...byId.values()].sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    ),
+    (a) => Boolean(mediaUrl(a.coverImage, "card")),
   );
 
   return (

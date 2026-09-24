@@ -48,6 +48,11 @@ export function mediaUrl(
   return toRelative(m.url);
 }
 
+/** Stable reorder: items with a cover image first, original order kept within each group. */
+export function coverFirst<T>(items: T[], hasCover: (item: T) => boolean): T[] {
+  return [...items.filter(hasCover), ...items.filter((item) => !hasCover(item))];
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

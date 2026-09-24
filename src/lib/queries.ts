@@ -116,6 +116,20 @@ export async function getLatestNews(
   );
 }
 
+export async function getNewsWithCover(locale: AppLocale, limit = 60): Promise<News[]> {
+  return cached(["news-with-cover", locale, String(limit)], ["news"], async () => {
+    const payload = await getPayloadClient();
+    const res = await payload.find({
+      collection: "news",
+      where: { coverImage: { exists: true } },
+      sort: "-publishedAt",
+      locale,
+      limit,
+    });
+    return res.docs;
+  });
+}
+
 export async function getUSNews(locale: AppLocale, limit = 4): Promise<UsNew[]> {
   return cached(["us-news", locale, String(limit)], ["us-news"], async () => {
     const payload = await getPayloadClient();

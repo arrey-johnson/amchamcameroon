@@ -5,8 +5,15 @@ import { usePathname } from "next/navigation";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { pushQuery, useUrlQuery } from "@/components/useUrlQuery";
+import { coverFirst } from "@/lib/utils";
 
-export type EventItem = { id: number; category: string; month: string; node: ReactNode };
+export type EventItem = {
+  id: number;
+  category: string;
+  month: string;
+  hasCover: boolean;
+  node: ReactNode;
+};
 
 type View = "upcoming" | "past" | "calendar";
 
@@ -43,7 +50,8 @@ export function EventsExplorer({
 
   const byCategory = (list: EventItem[]) =>
     category ? list.filter((e) => e.category === category) : list;
-  const shown = view === "past" ? byCategory(past) : byCategory(upcoming);
+  // Calendar stays chronological; list views lead with events that have a photo.
+  const shown = coverFirst(view === "past" ? byCategory(past) : byCategory(upcoming), (e) => e.hasCover);
 
   const tabs: { key: View; label: string; href: string }[] = [
     { key: "upcoming", label: labels.upcoming, href: pathname },

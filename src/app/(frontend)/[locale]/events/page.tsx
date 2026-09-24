@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { EventCard } from "@/components/cards/EventCard";
 import { EventsExplorer, type EventItem } from "@/components/events/EventsExplorer";
 import { getPastEvents, getUpcomingEvents } from "@/lib/queries";
-import { formatDate } from "@/lib/utils";
+import { formatDate, mediaUrl } from "@/lib/utils";
 import type { AppLocale } from "@/lib/payload";
 import type { Event } from "@/payload-types";
 
@@ -33,6 +33,7 @@ export default async function EventsPage({ params }: Props) {
     id: event.id,
     category: event.category,
     month: formatDate(event.startAt, locale, { month: "long", year: "numeric" }),
+    hasCover: Boolean(mediaUrl(event.coverImage, "card")),
     node: <EventCard event={event} past={isPast} />,
   });
 

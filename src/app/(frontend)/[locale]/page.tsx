@@ -16,7 +16,7 @@ import {
   getUpcomingEvents,
   getUSNews,
 } from "@/lib/queries";
-import { formatDate, mediaObj, mediaUrl } from "@/lib/utils";
+import { coverFirst, formatDate, mediaObj, mediaUrl } from "@/lib/utils";
 import type { AppLocale } from "@/lib/payload";
 
 const PILLAR_ICONS = [
@@ -39,10 +39,12 @@ export default async function HomePage({
   setRequestLocale(raw);
   const locale = raw as AppLocale;
 
-  const [slides, news, events, usNews, members, settings, t, tCommon, whoWeAre] =
+  const NEWS_TABS = ["press-release", "news", "policy"];
+  const [slides, latestNews, tabNews, events, usNews, members, settings, t, tCommon, whoWeAre] =
     await Promise.all([
       getHeroSlides(locale),
-      getLatestNews(locale, 12),
+      getLatestNews(locale, 60),
+      Promise.all(NEWS_TABS.map((cat) => getLatestNews(locale, 30, cat))),
       getUpcomingEvents(locale, 3),
       getUSNews(locale, 4),
       getFeaturedMembers(locale),
@@ -51,6 +53,20 @@ export default async function HomePage({
       getTranslations({ locale, namespace: "common" }),
       getPage(locale, "who-we-are"),
     ]);
+
+  // Each homepage news tab shows 3 cards: prefer articles with a cover photo,
+  // and only send the cards the tabs can actually display.
+  const hasCover = (n: (typeof latestNews)[number]) => Boolean(mediaUrl(n.coverImage, "card"));
+  const picked = new Map<number, (typeof latestNews)[number]>();
+  for (const list of [latestNews, ...tabNews]) {
+    for (const n of coverFirst(list, hasCover).slice(0, 3)) picked.set(n.id, n);
+  }
+  const news = coverFirst(
+    [...picked.values()].sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    ),
+    hasCover,
+  );
 
   const pillars = [
     { title: t("pillarTradeTitle"), text: t("pillarTradeText"), href: "/membership" },
