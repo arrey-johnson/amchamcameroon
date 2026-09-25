@@ -304,7 +304,12 @@ export default async function HomePage({
           <Reveal>
             <SectionHeading title={t("logoWallTitle")} center />
           </Reveal>
-          <LogoWall members={members} />
+          <LogoWall
+            groups={[
+              { label: t("logoWallPatrons"), members: members.filter((m) => m.category === "patron") },
+              { label: t("logoWallSponsors"), members: members.filter((m) => m.category === "sponsor") },
+            ]}
+          />
         </Section>
       )}
 

@@ -152,7 +152,7 @@ export async function getFeaturedMembers(locale: AppLocale): Promise<Member[]> {
       where: { featured: { equals: true } },
       sort: "order",
       locale,
-      limit: 30,
+      limit: 200,
     });
     return res.docs;
   });

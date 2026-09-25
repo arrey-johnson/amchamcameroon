@@ -19,6 +19,7 @@
 
   --animate-marquee: marquee 40s linear infinite;
   --animate-marquee-slow: marquee 60s linear infinite;
+  --animate-marquee-slow-reverse: marquee 60s linear infinite reverse;
 
   @keyframes marquee {
     from {
