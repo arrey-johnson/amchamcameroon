@@ -2,7 +2,7 @@
 export const SITE_PATHS = [
   "",
   "/about/who-we-are",
-  "/about/vision-mission",
+  "/about/our-pillars",
   "/about/word-from-the-us-embassy",
   "/about/word-from-the-president",
   "/about/board",

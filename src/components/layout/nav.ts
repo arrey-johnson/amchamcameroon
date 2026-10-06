@@ -9,7 +9,7 @@ export function buildNav(t: (key: string) => string): NavItem[] {
       href: "/about/who-we-are",
       children: [
         { label: t("whoWeAre"), href: "/about/who-we-are" },
-        { label: t("visionMission"), href: "/about/vision-mission" },
+        { label: t("ourPillars"), href: "/about/our-pillars" },
         { label: t("embassyWord"), href: "/about/word-from-the-us-embassy" },
         { label: t("presidentWord"), href: "/about/word-from-the-president" },
         { label: t("board"), href: "/about/board" },

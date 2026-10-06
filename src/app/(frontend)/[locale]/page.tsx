@@ -306,8 +306,22 @@ export default async function HomePage({
           </Reveal>
           <LogoWall
             groups={[
-              { label: t("logoWallPatrons"), members: members.filter((m) => m.category === "patron") },
-              { label: t("logoWallSponsors"), members: members.filter((m) => m.category === "sponsor") },
+              {
+                label: t("logoWallPatrons"),
+                members: members.filter(
+                  (m) =>
+                    m.category === "patron" &&
+                    !["PwC", "Standard Chartered Bank", "Access Bank"].includes(m.name),
+                ),
+              },
+              {
+                label: t("logoWallSponsors"),
+                members: members.filter(
+                  (m) =>
+                    m.category === "sponsor" &&
+                    !["PwC", "Standard Chartered Bank", "Access Bank"].includes(m.name),
+                ),
+              },
             ]}
           />
         </Section>

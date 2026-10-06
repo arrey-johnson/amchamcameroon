@@ -68,7 +68,7 @@ export function DirectoryExplorer({ members }: { members: MemberData[] }) {
           <span className="sr-only">{t("filterCategory")}</span>
           <select value={category} onChange={(e) => setCategory(e.target.value)} className={`${selectCls} w-full`}>
             <option value="all">{t("filterCategory")} — {tCommon("all")}</option>
-            {(["patron", "sponsor", "corporate", "sme", "individual"] as const).map((c) => (
+            {(["patron", "sponsor"] as const).map((c) => (
               <option key={c} value={c}>{t(`cats.${c}.name`)}</option>
             ))}
           </select>

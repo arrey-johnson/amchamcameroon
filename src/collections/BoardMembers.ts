@@ -27,7 +27,7 @@ export const BoardMembers: CollectionConfig = {
     { name: "company", type: "text" },
     { name: "photo", type: "upload", relationTo: "media" },
     { name: "bio", type: "textarea", localized: true },
-    { name: "linkedin", type: "text" },
+    { name: "linkedin", type: "text", admin: { description: "Full LinkedIn profile URL" } },
     {
       name: "group",
       type: "select",
@@ -38,6 +38,16 @@ export const BoardMembers: CollectionConfig = {
         { label: "Executive Office", value: "executive" },
       ],
       admin: { position: "sidebar" },
+    },
+    {
+      name: "year",
+      type: "number",
+      required: true,
+      defaultValue: new Date().getFullYear(),
+      admin: {
+        position: "sidebar",
+        description: "Term year shown in the year filter on the public Board / EO pages.",
+      },
     },
     { name: "order", type: "number", defaultValue: 0, admin: { position: "sidebar" } },
   ],

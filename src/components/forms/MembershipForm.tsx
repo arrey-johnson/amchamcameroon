@@ -25,14 +25,16 @@ export function MembershipForm() {
     name: "",
     email: "",
     phone: "",
-    category: "corporate",
+    category: "patron",
     motivation: "",
   });
 
   const [query, sync] = useUrlQuery();
   const queryCategory = query.get("category");
   useEffect(() => {
-    if (queryCategory) setValues((v) => ({ ...v, category: queryCategory }));
+    if (queryCategory === "patron" || queryCategory === "sponsor") {
+      setValues((v) => ({ ...v, category: queryCategory }));
+    }
   }, [queryCategory]);
 
   const set = (key: keyof typeof values) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -123,8 +125,8 @@ export function MembershipForm() {
       <div className={step === 2 ? "space-y-4" : "hidden"}>
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-ink">{t("membershipCategory")}</span>
-          <select name="category" value={values.category} onChange={set("category")} className={inputCls}>
-            {(["patron", "sponsor", "corporate", "sme", "individual"] as const).map((c) => (
+          <select name="category" value={values.category} onChange={set("category")} className={inputCls} required>
+            {(["patron", "sponsor"] as const).map((c) => (
               <option key={c} value={c}>{tMember(`cats.${c}.name`)}</option>
             ))}
           </select>

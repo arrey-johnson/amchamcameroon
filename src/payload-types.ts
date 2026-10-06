@@ -390,6 +390,10 @@ export interface BoardMember {
   bio?: string | null;
   linkedin?: string | null;
   group: 'board' | 'executive';
+  /**
+   * Term year shown in the year filter on the public Board / EO pages.
+   */
+  year?: number | null;
   order?: number | null;
   updatedAt: string;
   createdAt: string;
@@ -811,6 +815,7 @@ export interface BoardMembersSelect<T extends boolean = true> {
   bio?: T;
   linkedin?: T;
   group?: T;
+  year?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -53,6 +53,45 @@ export function coverFirst<T>(items: T[], hasCover: (item: T) => boolean): T[] {
   return [...items.filter(hasCover), ...items.filter((item) => !hasCover(item))];
 }
 
+/**
+ * Rank for Board / EO titles so President always leads, then VP, Treasurer, etc.
+ * Lower number = earlier in the list. Unknown titles fall near the end.
+ */
+export function leadershipRoleRank(role: string | null | undefined): number {
+  const r = (role || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[-_/]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!r) return 90;
+  // President before any "vice president" match.
+  if (/(^|\b)(president|presidente)\b/.test(r) && !/\bvice\b/.test(r)) return 0;
+  if (/\bvice\b.*\bpresident/.test(r) || /\bvice president/.test(r) || /\bvicepresidente/.test(r))
+    return 10;
+  if (/\b(treasurer|tresorier|tresoriere)\b/.test(r)) return 20;
+  if (/\b(secretary|secretaire|secretaire general)\b/.test(r)) return 30;
+  if (/\b(executive director|directeur executif|directrice executive)\b/.test(r)) return 40;
+  if (/\b(ex officio|ex-officio)\b/.test(r)) return 70;
+  if (/\b(board member|administrateur|administratrice|membre)\b/.test(r)) return 60;
+  return 50;
+}
+
+/** Sort leadership profiles: role rank, then CMS order, then name. */
+export function sortByLeadershipRole<T extends { role?: string | null; order?: number | null; name?: string | null }>(
+  people: T[],
+): T[] {
+  return [...people].sort((a, b) => {
+    const rank = leadershipRoleRank(a.role) - leadershipRoleRank(b.role);
+    if (rank !== 0) return rank;
+    const order = (a.order ?? 0) - (b.order ?? 0);
+    if (order !== 0) return order;
+    return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
+  });
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

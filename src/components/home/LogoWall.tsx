@@ -4,7 +4,7 @@ import type { Member } from "@/payload-types";
 
 type Group = { label: string; members: Member[] };
 
-/** Auto-scrolling grayscale-to-color logo marquees, one row per group (Patrons, Sponsors). */
+/** Auto-scrolling logo marquees in original brand colors, one row per group. */
 export function LogoWall({ groups }: { groups: Group[] }) {
   const rows = groups
     .map((group) => ({ ...group, members: group.members.filter((m) => mediaUrl(m.logo)) }))
@@ -48,7 +48,7 @@ function LogoRow({ members, label, reverse }: { members: Member[]; label: string
               alt={mediaObj(member.logo)?.alt || member.name}
               width={160}
               height={80}
-              className="max-h-14 w-auto object-contain opacity-80 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 sm:max-h-16"
+              className="max-h-14 w-auto object-contain opacity-90 sm:max-h-16"
             />
           </div>
         ))}

@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { pushQuery, useUrlQuery } from "@/components/useUrlQuery";
@@ -30,6 +31,7 @@ export function EventsExplorer({
   labels,
   upcoming,
   past,
+  latestNews,
 }: {
   labels: {
     title: string;
@@ -38,9 +40,12 @@ export function EventsExplorer({
     upcoming: string;
     past: string;
     calendar: string;
+    latestNews: string;
+    viewAllNews: string;
   };
   upcoming: EventItem[];
   past: EventItem[];
+  latestNews: ReactNode[];
 }) {
   const pathname = usePathname();
   const [query, sync] = useUrlQuery();
@@ -120,6 +125,24 @@ export function EventsExplorer({
           <p className="rounded-lg bg-surface-alt p-10 text-center text-sm text-ink-soft">
             {labels.intro}
           </p>
+        )}
+
+        {view === "past" && latestNews.length > 0 && (
+          <div className="mt-20 border-t border-surface-alt pt-14">
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <h2 className="text-2xl font-extrabold text-navy sm:text-3xl">{labels.latestNews}</h2>
+              <Link href="/news" className="text-sm font-bold text-red transition-colors hover:text-red-dark">
+                {labels.viewAllNews}
+              </Link>
+            </div>
+            <div className="grid gap-6 md:grid-cols-3">
+              {latestNews.map((node, i) => (
+                <Reveal key={i} delay={(i % 3) * 80}>
+                  {node}
+                </Reveal>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </>

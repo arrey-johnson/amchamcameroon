@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { PageHero } from "@/components/PageHero";
-import { Section } from "@/components/ui/Section";
+import { Section, SectionHeading } from "@/components/ui/Section";
 import { Reveal } from "@/components/Reveal";
-import { RichText } from "@/components/RichText";
-import { getPage } from "@/lib/queries";
-import type { AppLocale } from "@/lib/payload";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -15,8 +12,6 @@ const BENEFIT_KEYS = [
   "networking",
   "intelligence",
   "matchmaking",
-  "visa",
-  "directory",
   "events",
   "promotion",
 ] as const;
@@ -26,8 +21,6 @@ const BENEFIT_ICONS: Record<(typeof BENEFIT_KEYS)[number], React.ReactNode> = {
   networking: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" strokeLinecap="round" strokeLinejoin="round" /></svg>,
   intelligence: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6"><path d="M3 3v18h18M7 15l4-4 3 3 5-6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
   matchmaking: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6"><path d="M8 12h8m-8 0a4 4 0 1 1-4-4m4 4a4 4 0 1 0 4 4m4-4a4 4 0 1 0-4-4m4 4a4 4 0 1 1 4 4" strokeLinecap="round" strokeLinejoin="round" /></svg>,
-  visa: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 8h4m-4 4h10m-10 4h6" strokeLinecap="round" /></svg>,
-  directory: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15ZM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" strokeLinecap="round" strokeLinejoin="round" /></svg>,
   events: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" /></svg>,
   promotion: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6"><path d="m3 11 18-8-4 18-6.5-6L3 11Zm7.5 4L9 21l2.5-3" strokeLinecap="round" strokeLinejoin="round" /></svg>,
 };
@@ -43,11 +36,11 @@ export default async function MembershipPage({ params }: Props) {
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "membership" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
-  const page = await getPage(locale as AppLocale, "membership-benefits");
 
   return (
     <>
-      <PageHero title={t("benefitsTitle")} intro={page?.intro || t("benefitsIntro")}>
+      {/* Complete hero statements; no repeated body history below. */}
+      <PageHero title={t("benefitsTitle")} intro={t("benefitsHero")}>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/membership/apply"
@@ -65,9 +58,12 @@ export default async function MembershipPage({ params }: Props) {
       </PageHero>
 
       <Section>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <Reveal>
+          <SectionHeading title={t("benefitsSectionTitle")} subtitle={t("benefitsIntro")} center />
+        </Reveal>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {BENEFIT_KEYS.map((key, i) => (
-            <Reveal key={key} delay={(i % 4) * 80}>
+            <Reveal key={key} delay={(i % 3) * 80}>
               <div className="h-full rounded-xl border border-surface-alt bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-red/8 text-red">
                   {BENEFIT_ICONS[key]}
@@ -79,14 +75,6 @@ export default async function MembershipPage({ params }: Props) {
           ))}
         </div>
       </Section>
-
-      {page?.body && (
-        <Section alt>
-          <div className="mx-auto max-w-3xl">
-            <RichText data={page.body} />
-          </div>
-        </Section>
-      )}
     </>
   );
 }

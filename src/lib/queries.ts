@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 import { getPayloadClient, type AppLocale } from "@/lib/payload";
+import { sortByLeadershipRole } from "@/lib/utils";
 import type {
   BoardMember,
   Committee,
@@ -175,16 +176,17 @@ export async function getBoard(
   locale: AppLocale,
   group: "board" | "executive",
 ): Promise<BoardMember[]> {
-  return cached(["board", locale, group], ["board-members"], async () => {
+  return cached(["board-by-role", locale, group], ["board-members"], async () => {
     const payload = await getPayloadClient();
     const res = await payload.find({
       collection: "board-members",
       where: { group: { equals: group } },
-      sort: "order",
+      sort: "-year,order",
       locale,
-      limit: 50,
+      limit: 200,
     });
-    return res.docs;
+    // Always lead with President → Vice President → Treasurer → … regardless of CMS order.
+    return sortByLeadershipRole(res.docs);
   });
 }
 
