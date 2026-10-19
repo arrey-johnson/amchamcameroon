@@ -39,8 +39,8 @@ export default async function MembershipPage({ params }: Props) {
 
   return (
     <>
-      {/* Complete hero statements; no repeated body history below. */}
-      <PageHero title={t("benefitsTitle")} intro={t("benefitsHero")}>
+      {/* Title + CTAs only — pitch is not repeated in the hero and again below. */}
+      <PageHero title={t("benefitsTitle")}>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/membership/apply"
@@ -59,7 +59,7 @@ export default async function MembershipPage({ params }: Props) {
 
       <Section>
         <Reveal>
-          <SectionHeading title={t("benefitsSectionTitle")} subtitle={t("benefitsIntro")} center />
+          <SectionHeading title={t("benefitsSectionTitle")} subtitle={t("benefitsHero")} center />
         </Reveal>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {BENEFIT_KEYS.map((key, i) => (
