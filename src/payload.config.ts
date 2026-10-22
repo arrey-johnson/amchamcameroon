@@ -28,7 +28,15 @@ import { Settings } from "@/globals/Settings";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const databaseURI = process.env.DATABASE_URI || "file:./amcham.db";
+const rawDatabaseURI = process.env.DATABASE_URI || "file:./amcham.db";
+// Supabase's session pooler (port 5432) caps the whole project at 15 clients,
+// which Next.js builds exhaust (EMAXCONNSESSION). Always use the transaction
+// pooler (port 6543) instead — it multiplexes many short-lived clients, which
+// is what a build/prerender + serverless workload needs.
+const databaseURI = rawDatabaseURI.replace(
+  /(\.pooler\.supabase\.com:)5432\//,
+  "$16543/",
+);
 const usePostgres = databaseURI.startsWith("postgres");
 const isLocalPostgres = /localhost|127\.0\.0\.1/.test(databaseURI);
 
