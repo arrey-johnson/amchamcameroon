@@ -8,9 +8,16 @@ export const BoardMembers: CollectionConfig = {
   admin: {
     group: "About",
     useAsTitle: "name",
-    defaultColumns: ["photo", "name", "role", "group", "year", "termEnd", "order"],
+    defaultColumns: ["group", "photo", "name", "role", "year", "termEnd", "order"],
+    // board sorts before executive alphabetically, then by order within each section.
+    defaultSort: "group",
+    groupBy: true,
+    pagination: { defaultLimit: 50 },
     description:
-      "Board of Directors and Executive Office profiles. Upload or replace each person's portrait via the Photo field.",
+      "Use the section tabs above the list (Board of Directors vs Executive Office), or the Group-by control, so you edit the right people. Upload or replace portraits via Profile photo.",
+    components: {
+      beforeListTable: ["@/components/admin/LeadershipSectionTabs"],
+    },
   },
   access: {
     read: anyone,
@@ -32,9 +39,25 @@ export const BoardMembers: CollectionConfig = {
     afterChange: [revalidateTags("board-members")],
     afterDelete: [revalidateTags("board-members")],
   },
-  defaultSort: "order",
+  defaultSort: "group",
   fields: [
     { name: "name", type: "text", required: true },
+    {
+      name: "group",
+      type: "select",
+      required: true,
+      defaultValue: "board",
+      label: "Section",
+      options: [
+        { label: "Board of Directors", value: "board" },
+        { label: "Executive Office", value: "executive" },
+      ],
+      admin: {
+        description:
+          "Board of Directors = elected officers & board members (public /about/board). Executive Office = staff (public /about/executive).",
+        position: "sidebar",
+      },
+    },
     {
       name: "photo",
       type: "upload",
@@ -61,17 +84,6 @@ export const BoardMembers: CollectionConfig = {
     { name: "company", type: "text" },
     { name: "bio", type: "textarea", localized: true },
     { name: "linkedin", type: "text", admin: { description: "Full LinkedIn profile URL" } },
-    {
-      name: "group",
-      type: "select",
-      required: true,
-      defaultValue: "board",
-      options: [
-        { label: "Board of Directors", value: "board" },
-        { label: "Executive Office", value: "executive" },
-      ],
-      admin: { position: "sidebar" },
-    },
     {
       name: "year",
       type: "number",

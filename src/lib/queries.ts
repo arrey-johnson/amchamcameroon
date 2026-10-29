@@ -176,7 +176,7 @@ export async function getBoard(
   locale: AppLocale,
   group: "board" | "executive",
 ): Promise<BoardMember[]> {
-  return cached(["board-by-term-v3", locale, group], ["board-members"], async () => {
+  return cached(["board-by-term-v4", locale, group], ["board-members"], async () => {
     const payload = await getPayloadClient();
     const res = await payload.find({
       collection: "board-members",
@@ -238,6 +238,7 @@ export async function getPage(locale: AppLocale, slug: string): Promise<Page | n
       collection: "pages",
       where: { slug: { equals: slug } },
       locale,
+      depth: 2,
       limit: 1,
     });
     return res.docs[0] ?? null;
