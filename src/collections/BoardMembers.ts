@@ -48,7 +48,16 @@ export const BoardMembers: CollectionConfig = {
           "Portrait shown on the public Board / Executive pages. Click to upload a new image, choose one from the media library, or clear and replace an existing photo.",
       },
     },
-    { name: "role", type: "text", required: true, localized: true, admin: { description: "e.g. President, Vice-President, Executive Director" } },
+    {
+      name: "role",
+      type: "text",
+      required: true,
+      localized: true,
+      admin: {
+        description:
+          "Board: President, Vice-President, Treasurer, Board Member… EO: Director, Operations, Communications.",
+      },
+    },
     { name: "company", type: "text" },
     { name: "bio", type: "textarea", localized: true },
     { name: "linkedin", type: "text", admin: { description: "Full LinkedIn profile URL" } },

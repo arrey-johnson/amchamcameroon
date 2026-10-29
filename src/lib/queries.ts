@@ -176,7 +176,7 @@ export async function getBoard(
   locale: AppLocale,
   group: "board" | "executive",
 ): Promise<BoardMember[]> {
-  return cached(["board-by-term", locale, group], ["board-members"], async () => {
+  return cached(["board-by-term-v3", locale, group], ["board-members"], async () => {
     const payload = await getPayloadClient();
     const res = await payload.find({
       collection: "board-members",

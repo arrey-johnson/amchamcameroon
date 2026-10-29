@@ -724,9 +724,9 @@ async function seed() {
     { name: "Ashley White", roleEn: "Ex Officio Board Member", roleFr: "Membre de droit", company: "Director, U.S. Embassy Branch Office Douala", v: "red" as const },
   ];
   const executive = [
-    { name: "Etienne Nkoa", roleEn: "Executive Director", roleFr: "Directeur Exécutif", company: "AmCham Cameroon", v: "navy" as const },
-    { name: "Membership & Events", roleEn: "Membership & Events", roleFr: "Adhésion & Événements", company: "AmCham Cameroon Secretariat", v: "red" as const },
-    { name: "Communications", roleEn: "Communications", roleFr: "Communication", company: "AmCham Cameroon Secretariat", v: "green" as const },
+    { name: "Ezechiel Passam", roleEn: "Director", roleFr: "Directeur", company: "AmCham Cameroon", v: "navy" as const },
+    { name: "Etienne Zambo", roleEn: "Operations", roleFr: "Opérations", company: "AmCham Cameroon Secretariat", v: "red" as const },
+    { name: "Brandone Cho", roleEn: "Communications", roleFr: "Communication", company: "AmCham Cameroon Secretariat", v: "green" as const },
   ];
 
   const seedPeople = async (list: typeof board, group: "board" | "executive") => {

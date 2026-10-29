@@ -74,6 +74,11 @@ export function leadershipRoleRank(role: string | null | undefined): number {
   if (/\b(treasurer|tresorier|tresoriere)\b/.test(r)) return 20;
   if (/\b(secretary|secretaire|secretaire general)\b/.test(r)) return 30;
   if (/\b(executive director|directeur executif|directrice executive)\b/.test(r)) return 40;
+  // Executive Office titles (Director alone, not Board President).
+  // Display order: Director → Operations → Communications.
+  if (/(^|\b)(director|directeur|directrice)\b/.test(r)) return 41;
+  if (/\b(operations?|operation)\b/.test(r)) return 42;
+  if (/\b(communications?|communication)\b/.test(r)) return 43;
   if (/\b(ex officio|ex-officio)\b/.test(r)) return 70;
   if (/\b(board member|administrateur|administratrice|membre)\b/.test(r)) return 60;
   return 50;
