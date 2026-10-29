@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { PageHero } from "@/components/PageHero";
@@ -114,12 +115,13 @@ export default async function CategoriesPage({ params }: Props) {
       <Section alt>
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           <div className="relative aspect-[16/11] overflow-hidden rounded-xl bg-navy/5">
-            <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center text-navy/40">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-12 w-12" aria-hidden>
-                <path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21v-1a5 5 0 0 1 5-5h0M20 21v-1a5 5 0 0 0-5-5h0M8 14h8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <p className="text-sm font-medium">{t("handshakePlaceholder")}</p>
-            </div>
+            <Image
+              src="/membership-handshake.jpg"
+              alt={t("handshakeAlt")}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
           </div>
           <div>
             <h2 className="text-2xl font-extrabold text-navy sm:text-3xl">{t("categoriesCtaTitle")}</h2>
