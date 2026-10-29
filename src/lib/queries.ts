@@ -183,6 +183,8 @@ export async function getBoard(
       where: { group: { equals: group } },
       sort: "-year,order",
       locale,
+      // depth 2 so photo → media (+ image sizes) is fully populated for PersonCard.
+      depth: 2,
       limit: 200,
     });
     // Always lead with President → Vice President → Treasurer → … regardless of CMS order.

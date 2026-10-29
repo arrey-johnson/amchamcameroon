@@ -8,7 +8,9 @@ export const BoardMembers: CollectionConfig = {
   admin: {
     group: "About",
     useAsTitle: "name",
-    defaultColumns: ["name", "role", "group", "year", "termEnd", "order"],
+    defaultColumns: ["photo", "name", "role", "group", "year", "termEnd", "order"],
+    description:
+      "Board of Directors and Executive Office profiles. Upload or replace each person's portrait via the Photo field.",
   },
   access: {
     read: anyone,
@@ -33,9 +35,21 @@ export const BoardMembers: CollectionConfig = {
   defaultSort: "order",
   fields: [
     { name: "name", type: "text", required: true },
+    {
+      name: "photo",
+      type: "upload",
+      relationTo: "media",
+      label: "Profile photo",
+      filterOptions: {
+        mimeType: { contains: "image" },
+      },
+      admin: {
+        description:
+          "Portrait shown on the public Board / Executive pages. Click to upload a new image, choose one from the media library, or clear and replace an existing photo.",
+      },
+    },
     { name: "role", type: "text", required: true, localized: true, admin: { description: "e.g. President, Vice-President, Executive Director" } },
     { name: "company", type: "text" },
-    { name: "photo", type: "upload", relationTo: "media" },
     { name: "bio", type: "textarea", localized: true },
     { name: "linkedin", type: "text", admin: { description: "Full LinkedIn profile URL" } },
     {
