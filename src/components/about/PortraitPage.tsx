@@ -32,7 +32,7 @@ export function PortraitPage({
                   alt={mediaObj(page.coverImage)?.alt || page.title}
                   fill
                   sizes="280px"
-                  className="object-cover"
+                  className="object-cover object-[center_18%]"
                   priority
                 />
               ) : (
