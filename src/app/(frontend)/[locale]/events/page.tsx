@@ -27,8 +27,8 @@ export default async function EventsPage({ params }: Props) {
   const tNews = await getTranslations({ locale, namespace: "news" });
 
   const [upcoming, past, news] = await Promise.all([
-    getUpcomingEvents(locale, 30),
-    getPastEvents(locale, 30),
+    getUpcomingEvents(locale, 100),
+    getPastEvents(locale, 100),
     getLatestNews(locale, 12),
   ]);
 
@@ -36,6 +36,9 @@ export default async function EventsPage({ params }: Props) {
     id: event.id,
     category: event.category,
     month: formatDate(event.startAt, locale, { month: "long", year: "numeric" }),
+    startAt: event.startAt,
+    endAt: event.endAt,
+    past: isPast,
     hasCover: Boolean(mediaUrl(event.coverImage, "card")),
     node: <EventCard event={event} past={isPast} />,
   });
@@ -56,6 +59,7 @@ export default async function EventsPage({ params }: Props) {
 
   return (
     <EventsExplorer
+      locale={locale}
       labels={{
         title: t("title"),
         tradeMissions: t("tradeMissions"),
@@ -65,6 +69,12 @@ export default async function EventsPage({ params }: Props) {
         calendar: t("calendar"),
         latestNews: t("latestNews"),
         viewAllNews: t("viewAllNews"),
+        previousMonth: t("previousMonth"),
+        nextMonth: t("nextMonth"),
+        eventsOnDay: t("eventsOnDay"),
+        noEventsOnDay: t("noEventsOnDay"),
+        upcomingDot: t("upcomingDot"),
+        pastDot: t("pastDot"),
       }}
       upcoming={upcoming.map((e) => toItem(e, false))}
       past={past.map((e) => toItem(e, true))}

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { PageHero } from "@/components/PageHero";
 import { Reveal } from "@/components/Reveal";
+import { EventsCalendar } from "@/components/events/EventsCalendar";
 import { pushQuery, useUrlQuery } from "@/components/useUrlQuery";
 import { coverFirst } from "@/lib/utils";
 
@@ -12,27 +13,23 @@ export type EventItem = {
   id: number;
   category: string;
   month: string;
+  startAt: string;
+  endAt?: string | null;
+  past: boolean;
   hasCover: boolean;
   node: ReactNode;
 };
 
 type View = "upcoming" | "past" | "calendar";
 
-function groupByMonth(items: EventItem[]): [string, EventItem[]][] {
-  const groups = new Map<string, EventItem[]>();
-  for (const item of items) {
-    if (!groups.has(item.month)) groups.set(item.month, []);
-    groups.get(item.month)!.push(item);
-  }
-  return Array.from(groups.entries());
-}
-
 export function EventsExplorer({
+  locale,
   labels,
   upcoming,
   past,
   latestNews,
 }: {
+  locale: string;
   labels: {
     title: string;
     tradeMissions: string;
@@ -42,6 +39,12 @@ export function EventsExplorer({
     calendar: string;
     latestNews: string;
     viewAllNews: string;
+    previousMonth: string;
+    nextMonth: string;
+    eventsOnDay: string;
+    noEventsOnDay: string;
+    upcomingDot: string;
+    pastDot: string;
   };
   upcoming: EventItem[];
   past: EventItem[];
@@ -57,6 +60,7 @@ export function EventsExplorer({
     category ? list.filter((e) => e.category === category) : list;
   // Calendar stays chronological; list views lead with events that have a photo.
   const shown = coverFirst(view === "past" ? byCategory(past) : byCategory(upcoming), (e) => e.hasCover);
+  const calendarEvents = [...byCategory(upcoming), ...byCategory(past)];
 
   const tabs: { key: View; label: string; href: string }[] = [
     { key: "upcoming", label: labels.upcoming, href: pathname },
@@ -99,20 +103,18 @@ export function EventsExplorer({
 
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         {view === "calendar" ? (
-          <div className="space-y-12">
-            {groupByMonth([...byCategory(upcoming), ...byCategory(past)]).map(([month, items]) => (
-              <div key={month}>
-                <h2 className="mb-5 border-b-2 border-surface-alt pb-2 text-xl font-extrabold capitalize text-navy">
-                  {month}
-                </h2>
-                <div className="grid gap-6 md:grid-cols-3">
-                  {items.map((item) => (
-                    <div key={item.id}>{item.node}</div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <EventsCalendar
+            events={calendarEvents}
+            locale={locale}
+            labels={{
+              previousMonth: labels.previousMonth,
+              nextMonth: labels.nextMonth,
+              eventsOnDay: labels.eventsOnDay,
+              noEventsOnDay: labels.noEventsOnDay,
+              upcomingDot: labels.upcomingDot,
+              pastDot: labels.pastDot,
+            }}
+          />
         ) : shown.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {shown.map((item, i) => (
