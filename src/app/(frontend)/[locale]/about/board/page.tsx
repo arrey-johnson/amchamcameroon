@@ -23,7 +23,12 @@ export default async function BoardPage({ params }: Props) {
     <>
       <PageHero title={t("boardTitle")} intro={t("boardIntro")} />
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-        <LeadershipExplorer people={people} allYearsLabel={t("allYears")} />
+        <LeadershipExplorer
+          people={people}
+          allYearsLabel={t("allYears")}
+          executiveBureauLabel={t("executiveBureau")}
+          boardMembersLabel={t("boardMembersSection")}
+        />
       </div>
     </>
   );

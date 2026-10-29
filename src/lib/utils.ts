@@ -92,6 +92,28 @@ export function sortByLeadershipRole<T extends { role?: string | null; order?: n
   });
 }
 
+/** President / Vice President / Treasurer — the board's Executive Bureau. */
+export function isExecutiveBureauRole(role: string | null | undefined): boolean {
+  return leadershipRoleRank(role) <= 20;
+}
+
+type TermFields = { year?: number | null; termEnd?: number | null };
+
+/** Term start year (falls back to the current calendar year). */
+export function termStartOf(person: TermFields): number {
+  return typeof person.year === "number" ? person.year : new Date().getFullYear();
+}
+
+/** Term end year — defaults to start + 2 (two-year tenure). */
+export function termEndOf(person: TermFields): number {
+  return typeof person.termEnd === "number" ? person.termEnd : termStartOf(person) + 2;
+}
+
+/** Public label for a term, e.g. "2024-2026". */
+export function termLabelOf(person: TermFields): string {
+  return `${termStartOf(person)}-${termEndOf(person)}`;
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

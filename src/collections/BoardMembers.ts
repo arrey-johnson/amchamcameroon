@@ -8,7 +8,7 @@ export const BoardMembers: CollectionConfig = {
   admin: {
     group: "About",
     useAsTitle: "name",
-    defaultColumns: ["name", "role", "group", "order"],
+    defaultColumns: ["name", "role", "group", "year", "termEnd", "order"],
   },
   access: {
     read: anyone,
@@ -17,6 +17,16 @@ export const BoardMembers: CollectionConfig = {
     delete: editors,
   },
   hooks: {
+    beforeChange: [
+      ({ data }) => {
+        if (!data) return data;
+        // Board terms are two years (e.g. 2024–2026). Default end = start + 2.
+        if (typeof data.year === "number" && typeof data.termEnd !== "number") {
+          data.termEnd = data.year + 2;
+        }
+        return data;
+      },
+    ],
     afterChange: [revalidateTags("board-members")],
     afterDelete: [revalidateTags("board-members")],
   },
@@ -44,9 +54,19 @@ export const BoardMembers: CollectionConfig = {
       type: "number",
       required: true,
       defaultValue: new Date().getFullYear(),
+      label: "Term start year",
       admin: {
         position: "sidebar",
-        description: "Term year shown in the year filter on the public Board / EO pages.",
+        description: "Start of the 2-year term (e.g. 2024 for 2024–2026, or 2027 for 2027–2029).",
+      },
+    },
+    {
+      name: "termEnd",
+      type: "number",
+      label: "Term end year",
+      admin: {
+        position: "sidebar",
+        description: "End of the term (defaults to start + 2 if left empty).",
       },
     },
     { name: "order", type: "number", defaultValue: 0, admin: { position: "sidebar" } },

@@ -391,9 +391,13 @@ export interface BoardMember {
   linkedin?: string | null;
   group: 'board' | 'executive';
   /**
-   * Term year shown in the year filter on the public Board / EO pages.
+   * Start of the 2-year term (e.g. 2024 for 2024–2026, or 2027 for 2027–2029).
    */
   year?: number | null;
+  /**
+   * End of the term (defaults to start + 2 if left empty).
+   */
+  termEnd?: number | null;
   order?: number | null;
   updatedAt: string;
   createdAt: string;
@@ -816,6 +820,7 @@ export interface BoardMembersSelect<T extends boolean = true> {
   linkedin?: T;
   group?: T;
   year?: T;
+  termEnd?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;
