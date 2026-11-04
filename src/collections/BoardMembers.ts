@@ -9,8 +9,6 @@ export const BoardMembers: CollectionConfig = {
     group: "About",
     useAsTitle: "name",
     defaultColumns: ["group", "photo", "name", "role", "year", "termEnd", "order"],
-    // board sorts before executive alphabetically, then by order within each section.
-    defaultSort: "group",
     groupBy: true,
     pagination: { defaultLimit: 50 },
     description:
