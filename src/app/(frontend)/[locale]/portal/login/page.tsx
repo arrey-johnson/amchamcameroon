@@ -39,6 +39,7 @@ export default async function PortalLoginPage({ params }: Props) {
             password: t("password"),
             submit: t("signIn"),
             submitting: t("signingIn"),
+            forgotPassword: t("forgotPassword"),
             errorMissing: t("errorMissing"),
             errorFailed: t("errorFailed"),
             errorDisabled: t("errorDisabled"),

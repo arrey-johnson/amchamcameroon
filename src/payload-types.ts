@@ -96,6 +96,7 @@ export interface Config {
     events: EventsSelect<false> | EventsSelect<true>;
     newsletters: NewslettersSelect<false> | NewslettersSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
+    'member-accounts': MemberAccountsSelect<false> | MemberAccountsSelect<true>;
     'board-members': BoardMembersSelect<false> | BoardMembersSelect<true>;
     committees: CommitteesSelect<false> | CommitteesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -413,7 +414,21 @@ export interface MemberAccount {
   status: 'active' | 'invited' | 'disabled';
   updatedAt: string;
   createdAt: string;
-  collection?: 'member-accounts';
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'member-accounts';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1006,6 +1021,32 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-accounts_select".
+ */
+export interface MemberAccountsSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  member?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
       };
 }
 /**

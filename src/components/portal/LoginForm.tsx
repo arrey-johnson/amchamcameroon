@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { memberLogin, type PortalAuthState } from "@/app/portal-actions";
 
 const initial: PortalAuthState = { status: "idle" };
@@ -12,6 +12,7 @@ type Props = {
     password: string;
     submit: string;
     submitting: string;
+    forgotPassword: string;
     errorMissing: string;
     errorFailed: string;
     errorDisabled: string;
@@ -51,7 +52,15 @@ export function LoginForm({ labels }: Props) {
         />
       </label>
       <label className="block">
-        <span className="mb-1.5 block text-sm font-semibold text-ink">{labels.password}</span>
+        <div className="mb-1.5 flex items-center justify-between gap-3">
+          <span className="text-sm font-semibold text-ink">{labels.password}</span>
+          <Link
+            href="/portal/forgot-password"
+            className="text-xs font-semibold text-navy hover:text-red"
+          >
+            {labels.forgotPassword}
+          </Link>
+        </div>
         <input
           type="password"
           name="password"

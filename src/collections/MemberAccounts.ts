@@ -7,7 +7,14 @@ import { anyStaff, editors } from "@/access";
  */
 export const MemberAccounts: CollectionConfig = {
   slug: "member-accounts",
-  auth: true,
+  auth: {
+    tokenExpiration: 7200,
+    // Portal sends its own branded reset email via Hostinger SMTP
+    // (payload.forgotPassword is called with disableEmail: true).
+    forgotPassword: {
+      expiration: 60 * 60 * 1000, // 1 hour
+    },
+  },
   labels: { singular: "Member account", plural: "Member accounts" },
   admin: {
     group: "People",
@@ -17,19 +24,22 @@ export const MemberAccounts: CollectionConfig = {
       "Login accounts for the member portal. Create an account here, link it to a Member company, and share the email/password with the contact.",
   },
   access: {
-    admin: anyStaff,
+    // admin access must return boolean (not a Where clause).
+    admin: ({ req }) => Boolean(anyStaff({ req })),
     create: anyStaff,
     delete: editors,
     read: ({ req }) => {
       if (anyStaff({ req })) return true;
-      if (req.user?.collection === "member-accounts") {
+      const collection = (req.user as { collection?: string } | null)?.collection;
+      if (collection === "member-accounts" && req.user) {
         return { id: { equals: req.user.id } };
       }
       return false;
     },
     update: ({ req }) => {
       if (anyStaff({ req })) return true;
-      if (req.user?.collection === "member-accounts") {
+      const collection = (req.user as { collection?: string } | null)?.collection;
+      if (collection === "member-accounts" && req.user) {
         return { id: { equals: req.user.id } };
       }
       return false;

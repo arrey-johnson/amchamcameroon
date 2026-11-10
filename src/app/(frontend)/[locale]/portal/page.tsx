@@ -17,7 +17,10 @@ export default async function PortalDashboardPage({ params }: Props) {
   setRequestLocale(locale);
 
   const session = await getPortalSession();
-  if (!session) redirect({ href: "/portal/login", locale });
+  if (!session) {
+    redirect({ href: "/portal/login", locale });
+    return null;
+  }
 
   const t = await getTranslations({ locale, namespace: "portal" });
   const events = await getUpcomingEvents(locale as AppLocale, 4);

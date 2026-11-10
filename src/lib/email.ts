@@ -319,3 +319,93 @@ export async function sendSubmissionEmails(args: {
     if (r.status === "rejected") console.error("[email] send failed:", r.reason);
   });
 }
+
+/**
+ * Member-portal password reset link. Uses the same Hostinger SMTP / Resend path
+ * as form mail so inbox placement stays consistent.
+ */
+export async function sendPasswordResetEmail(args: {
+  to: string;
+  name?: string | null;
+  resetUrl: string;
+  locale: string;
+  settings?: Setting | null;
+}): Promise<void> {
+  const { to, name, resetUrl, locale, settings } = args;
+  const lang = locale === "fr" ? "fr" : "en";
+  const greet =
+    name?.trim() || (lang === "fr" ? "Madame, Monsieur" : "there");
+
+  const subject =
+    lang === "fr"
+      ? "Réinitialisez votre mot de passe — Espace membre AmCham"
+      : "Reset your password — AmCham member portal";
+
+  const bodyText =
+    lang === "fr"
+      ? [
+          `Cher/Chère ${greet},`,
+          "",
+          "Nous avons reçu une demande de réinitialisation du mot de passe de votre espace membre AmCham Cameroun.",
+          "",
+          `Ouvrez ce lien pour choisir un nouveau mot de passe (valide 1 heure) :`,
+          resetUrl,
+          "",
+          "Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail — votre mot de passe actuel reste inchangé.",
+          "",
+          "Cordialement,",
+          "AmCham Cameroun",
+        ].join("\n")
+      : [
+          `Dear ${greet},`,
+          "",
+          "We received a request to reset the password for your AmCham Cameroon member portal account.",
+          "",
+          "Open this link to choose a new password (valid for 1 hour):",
+          resetUrl,
+          "",
+          "If you did not ask for this, you can ignore this email — your current password will stay the same.",
+          "",
+          "Best regards,",
+          "AmCham Cameroon",
+        ].join("\n");
+
+  const ctaLabel = lang === "fr" ? "Choisir un nouveau mot de passe" : "Choose a new password";
+  const intro =
+    lang === "fr"
+      ? `Cher/Chère ${greet},<br/><br/>Nous avons reçu une demande de réinitialisation du mot de passe de votre espace membre AmCham Cameroun.`
+      : `Dear ${greet},<br/><br/>We received a request to reset the password for your AmCham Cameroon member portal account.`;
+  const ignore =
+    lang === "fr"
+      ? "Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail — votre mot de passe actuel reste inchangé."
+      : "If you did not ask for this, you can ignore this email — your current password will stay the same.";
+
+  const bodyHtml = `
+    <p style="margin:0 0 14px;line-height:1.6;">${intro}</p>
+    <p style="margin:0 0 22px;">
+      <a href="${resetUrl}" style="display:inline-block;background:#e30613;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:6px;">${ctaLabel}</a>
+    </p>
+    <p style="margin:0 0 14px;line-height:1.6;font-size:13px;color:#4b5160;">
+      ${lang === "fr" ? "Le lien expire dans 1 heure. S'il ne fonctionne pas, copiez-collez cette adresse :" : "The link expires in 1 hour. If the button does not work, copy and paste this address:"}<br/>
+      <a href="${resetUrl}" style="color:#232e7d;word-break:break-all;">${resetUrl}</a>
+    </p>
+    <p style="margin:0;line-height:1.6;font-size:13px;color:#4b5160;">${ignore}</p>
+  `;
+
+  const from =
+    process.env.EMAIL_FROM?.trim() ||
+    settings?.fromAddress?.trim() ||
+    DEFAULT_FROM;
+
+  await sendMail({
+    from,
+    to,
+    subject,
+    html: brandWrap(bodyHtml, { noReplyFooter: true, locale: lang }),
+    text:
+      bodyText +
+      (lang === "fr"
+        ? "\n\n—\nMessage automatique — merci de ne pas répondre à cet e-mail."
+        : "\n\n—\nAutomated message — please do not reply to this email."),
+  });
+}
