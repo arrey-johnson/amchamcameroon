@@ -1,3 +1,6 @@
+import nodemailer from "nodemailer";
+import type { Transporter } from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import { Resend } from "resend";
 import type { Setting } from "@/payload-types";
 
@@ -11,6 +14,21 @@ type SubmissionData = {
   message?: string;
   meta?: Record<string, unknown>;
 };
+
+type OutboundMail = {
+  from: string;
+  to: string;
+  replyTo?: string;
+  subject: string;
+  html: string;
+  text: string;
+};
+
+/** Inbox for every website form / application / subscription. */
+export const DEFAULT_ADMIN_EMAIL = "ed@amchamcam.org";
+
+/** Public From address — Hostinger alias of the SMTP_USER mailbox. */
+export const DEFAULT_FROM = "AmCham Cameroon <admin@amchamcam.org>";
 
 const FALLBACK_AUTOREPLY: Record<string, { subject: string; body: string }> = {
   en: {
@@ -57,9 +75,93 @@ function textToHtml(text: string): string {
     .join("");
 }
 
+function resolveFrom(settings: Setting): string {
+  return process.env.EMAIL_FROM?.trim() || settings.fromAddress?.trim() || DEFAULT_FROM;
+}
+
+function resolveAdminTo(settings: Setting): string {
+  return (
+    process.env.EMAIL_ADMIN?.trim() ||
+    settings.adminNotifyEmail?.trim() ||
+    settings.emails?.[0]?.email?.trim() ||
+    DEFAULT_ADMIN_EMAIL
+  );
+}
+
+let smtpTransporter: Transporter | null = null;
+
+function getSmtpTransporter(): Transporter | null {
+  const host = process.env.SMTP_HOST?.trim();
+  const user = process.env.SMTP_USER?.trim();
+  const pass = process.env.SMTP_PASS;
+  if (!host || !user || !pass) return null;
+
+  if (smtpTransporter) return smtpTransporter;
+
+  const port = Number(process.env.SMTP_PORT || 465);
+  const secure =
+    process.env.SMTP_SECURE === "true" ||
+    (process.env.SMTP_SECURE !== "false" && port === 465);
+
+  const options: SMTPTransport.Options = {
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+    // Hostinger requires modern TLS; avoid silent downgrades.
+    tls: { minVersion: "TLSv1.2" },
+  };
+
+  smtpTransporter = nodemailer.createTransport(options);
+  return smtpTransporter;
+}
+
+/**
+ * Prefer Hostinger SMTP (same stack as ed@amchamcam.org) for inbox placement.
+ * Fall back to Resend only when SMTP is not configured.
+ */
+async function sendMail(msg: OutboundMail): Promise<void> {
+  const smtp = getSmtpTransporter();
+  if (smtp) {
+    await smtp.sendMail({
+      from: msg.from,
+      to: msg.to,
+      replyTo: msg.replyTo,
+      subject: msg.subject,
+      html: msg.html,
+      text: msg.text,
+      // Transactional — suppress vacation / auto-reply loops.
+      headers: {
+        "Auto-Submitted": "auto-generated",
+        "X-Auto-Response-Suppress": "OOF, AutoReply",
+      },
+    });
+    return;
+  }
+
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (apiKey) {
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from: msg.from,
+      to: msg.to,
+      replyTo: msg.replyTo,
+      subject: msg.subject,
+      html: msg.html,
+      text: msg.text,
+    });
+    if (error) throw new Error(error.message);
+    return;
+  }
+
+  console.warn(
+    "[email] Skipping send — configure SMTP_HOST/SMTP_USER/SMTP_PASS (Hostinger) or RESEND_API_KEY.",
+  );
+}
+
 /**
  * Sends the visitor auto-reply and the admin notification for a form submission.
- * No-ops gracefully when RESEND_API_KEY is not configured.
+ * No-ops gracefully when neither Hostinger SMTP nor Resend is configured.
  */
 export async function sendSubmissionEmails(args: {
   type: SubmissionType;
@@ -68,11 +170,8 @@ export async function sendSubmissionEmails(args: {
   settings: Setting;
 }): Promise<void> {
   const { type, data, locale, settings } = args;
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return;
-
-  const resend = new Resend(apiKey);
-  const from = settings.fromAddress || "AmCham Cameroon <onboarding@resend.dev>";
+  const from = resolveFrom(settings);
+  const adminTo = resolveAdminTo(settings);
   const jobs: Promise<unknown>[] = [];
 
   // 1. Visitor auto-reply (localized, template editable in admin settings).
@@ -82,9 +181,11 @@ export async function sendSubmissionEmails(args: {
     const bodyTemplate = settings.autoReplyBody || fallback.body;
     const body = bodyTemplate.replace(/\{\{\s*name\s*\}\}/g, data.name || "");
     jobs.push(
-      resend.emails.send({
+      sendMail({
         from,
         to: data.email,
+        // Replies from the visitor land in the chamber inbox, not a dead mailbox.
+        replyTo: adminTo,
         subject,
         html: brandWrap(textToHtml(body)),
         text: body,
@@ -93,41 +194,55 @@ export async function sendSubmissionEmails(args: {
   }
 
   // 2. Admin notification with the submission details.
-  const adminTo = settings.adminNotifyEmail || settings.emails?.[0]?.email;
-  if (adminTo) {
-    const rows = Object.entries({
-      Type: TYPE_LABELS[type],
-      Name: data.name,
-      Email: data.email,
-      Phone: data.phone,
-      Company: data.company,
-      Message: data.message,
-      ...(data.meta
-        ? Object.fromEntries(
-            Object.entries(data.meta).map(([k, v]) => [k, String(v ?? "")]),
-          )
-        : {}),
-      Language: locale.toUpperCase(),
-    })
-      .filter(([, v]) => v)
-      .map(
-        ([k, v]) =>
-          `<tr><td style="padding:6px 12px 6px 0;font-weight:bold;vertical-align:top;white-space:nowrap;">${k}</td><td style="padding:6px 0;">${String(v).replace(/</g, "&lt;")}</td></tr>`,
-      )
-      .join("");
+  const rows = Object.entries({
+    Type: TYPE_LABELS[type],
+    Name: data.name,
+    Email: data.email,
+    Phone: data.phone,
+    Company: data.company,
+    Message: data.message,
+    ...(data.meta
+      ? Object.fromEntries(
+          Object.entries(data.meta).map(([k, v]) => [k, String(v ?? "")]),
+        )
+      : {}),
+    Language: locale.toUpperCase(),
+  })
+    .filter(([, v]) => v)
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:6px 12px 6px 0;font-weight:bold;vertical-align:top;white-space:nowrap;">${k}</td><td style="padding:6px 0;">${String(v).replace(/</g, "&lt;")}</td></tr>`,
+    )
+    .join("");
 
-    jobs.push(
-      resend.emails.send({
-        from,
-        to: adminTo,
-        replyTo: data.email,
-        subject: `[AmCham Website] New ${TYPE_LABELS[type].toLowerCase()} from ${data.name || data.email}`,
-        html: brandWrap(
-          `<h2 style="margin:0 0 16px;color:#232e7d;">New ${TYPE_LABELS[type].toLowerCase()}</h2><table style="font-size:14px;border-collapse:collapse;">${rows}</table>`,
-        ),
-      }),
-    );
-  }
+  const adminSubject = `[AmCham Website] New ${TYPE_LABELS[type].toLowerCase()} from ${data.name || data.email}`;
+  const adminText = [
+    `New ${TYPE_LABELS[type].toLowerCase()}`,
+    "",
+    `Name: ${data.name || "—"}`,
+    `Email: ${data.email}`,
+    data.phone ? `Phone: ${data.phone}` : null,
+    data.company ? `Company: ${data.company}` : null,
+    data.message ? `Message:\n${data.message}` : null,
+    `Language: ${locale.toUpperCase()}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  jobs.push(
+    sendMail({
+      from,
+      to: adminTo,
+      // Never forge From as the visitor — that triggers spam filters.
+      // Reply opens a thread to the visitor instead.
+      replyTo: data.email,
+      subject: adminSubject,
+      html: brandWrap(
+        `<h2 style="margin:0 0 16px;color:#232e7d;">New ${TYPE_LABELS[type].toLowerCase()}</h2><table style="font-size:14px;border-collapse:collapse;">${rows}</table>`,
+      ),
+      text: adminText,
+    }),
+  );
 
   const results = await Promise.allSettled(jobs);
   results.forEach((r) => {

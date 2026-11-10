@@ -116,7 +116,7 @@ async function seed() {
       twitter: "https://x.com/amchamcmr",
       linkedin: "https://www.linkedin.com/company/amcham-cameroon",
       youtube: "https://www.youtube.com/@amchamcameroon",
-      fromAddress: "AmCham Cameroon <onboarding@resend.dev>",
+      fromAddress: "AmCham Cameroon <admin@amchamcam.org>",
       adminNotifyEmail: "ed@amchamcam.org",
       autoReplyEnabled: true,
       autoReplySubject: "Thank you for contacting AmCham Cameroon",

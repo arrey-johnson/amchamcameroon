@@ -63,8 +63,22 @@ export const Settings: GlobalConfig = {
         {
           label: "Email",
           fields: [
-            { name: "fromAddress", type: "text", admin: { description: "Sender, e.g. AmCham Cameroon <no-reply@amchamcam.org>" } },
-            { name: "adminNotifyEmail", type: "email", admin: { description: "Inbox notified on each form submission." } },
+            {
+              name: "fromAddress",
+              type: "text",
+              admin: {
+                description:
+                  "Sender shown to recipients, e.g. AmCham Cameroon <admin@amchamcam.org>. Use the Hostinger mailbox or an alias of SMTP_USER.",
+              },
+            },
+            {
+              name: "adminNotifyEmail",
+              type: "email",
+              admin: {
+                description:
+                  "Inbox notified on every contact form, membership application, and newsletter signup. Defaults to ed@amchamcam.org.",
+              },
+            },
             { name: "autoReplyEnabled", type: "checkbox", defaultValue: true },
             { name: "autoReplySubject", type: "text", localized: true },
             {
