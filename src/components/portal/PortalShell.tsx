@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
-import { memberLogout } from "@/app/portal-actions";
+import { PortalLogoutButton } from "@/components/portal/PortalLogoutButton";
 
 type Props = {
   locale: string;
@@ -19,7 +19,7 @@ type Props = {
   };
 };
 
-export function PortalShell({ name, company, children, labels }: Props) {
+export function PortalShell({ locale, name, company, children, labels }: Props) {
   return (
     <div className="min-h-screen bg-[#f4f6fb] text-ink">
       <header className="border-b border-ink/10 bg-white">
@@ -45,14 +45,7 @@ export function PortalShell({ name, company, children, labels }: Props) {
             >
               {labels.liveSite}
             </Link>
-            <form action={memberLogout}>
-              <button
-                type="submit"
-                className="rounded-md bg-navy px-3 py-2 text-xs font-bold text-white transition hover:bg-navy-dark"
-              >
-                {labels.logout}
-              </button>
-            </form>
+            <PortalLogoutButton label={labels.logout} locale={locale} />
           </div>
         </div>
         <nav className="border-t border-ink/5 bg-white">

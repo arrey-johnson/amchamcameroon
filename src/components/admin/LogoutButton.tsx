@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-/** Dashboard logout: clears the Payload session cookie and returns to login. */
+/** Dashboard logout: revokes the Payload session cookie and returns to login. */
 export default function LogoutButton() {
   const [busy, setBusy] = useState(false);
 
@@ -11,6 +11,16 @@ export default function LogoutButton() {
     setBusy(true);
     try {
       await fetch("/api/users/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch {
+      /* still clear below */
+    }
+    try {
+      // Force-expire payload-token even if /users/logout returned 400 (no user).
+      await fetch("/api/auth/clear-session", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

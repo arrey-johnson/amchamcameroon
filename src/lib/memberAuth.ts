@@ -50,18 +50,26 @@ export async function getPortalSession(): Promise<PortalSession | null> {
   return { account, member };
 }
 
-export async function setAuthCookie(token: string, tokenExpirationSeconds = 7200): Promise<void> {
-  const jar = await cookies();
-  jar.set(TOKEN_COOKIE, token, {
+function authCookieOptions(maxAge: number) {
+  return {
     httpOnly: true,
     path: "/",
-    sameSite: "lax",
+    sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
-    maxAge: tokenExpirationSeconds,
-  });
+    maxAge,
+  };
+}
+
+export async function setAuthCookie(token: string, tokenExpirationSeconds = 7200): Promise<void> {
+  const jar = await cookies();
+  jar.set(TOKEN_COOKIE, token, authCookieOptions(tokenExpirationSeconds));
 }
 
 export async function clearAuthCookie(): Promise<void> {
   const jar = await cookies();
-  jar.delete(TOKEN_COOKIE);
+  // Next.js only clears a cookie reliably when options match how it was set.
+  jar.set(TOKEN_COOKIE, "", {
+    ...authCookieOptions(0),
+    expires: new Date(0),
+  });
 }

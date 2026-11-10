@@ -1,7 +1,6 @@
 "use server";
 
 import { getLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { getPayloadClient, type AppLocale } from "@/lib/payload";
 import { clearAuthCookie, getPortalSession, setAuthCookie } from "@/lib/memberAuth";
@@ -53,13 +52,6 @@ export async function memberLogin(
   } catch {
     return { status: "error", message: "failed" };
   }
-}
-
-export async function memberLogout(): Promise<void> {
-  // Cookie clear ends the portal session (Payload local API has no logout helper).
-  await clearAuthCookie();
-  const locale = await getLocale();
-  redirect({ href: "/portal/login", locale });
 }
 
 export async function updateMemberProfile(
