@@ -4,10 +4,12 @@ import { superAdmins, superAdminsField } from "@/access";
 export const Users: CollectionConfig = {
   slug: "users",
   auth: true,
+  labels: { singular: "User", plural: "Users" },
   admin: {
     useAsTitle: "email",
-    group: "Administration",
+    group: "Site",
     defaultColumns: ["email", "name", "role"],
+    description: "People who can sign in to manage the website. Only Super Admins can add or change roles.",
   },
   access: {
     create: superAdmins,

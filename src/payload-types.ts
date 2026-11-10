@@ -64,6 +64,7 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    'member-accounts': MemberAccountAuthOperations;
   };
   blocks: {};
   collections: {
@@ -73,6 +74,7 @@ export interface Config {
     events: Event;
     newsletters: Newsletter;
     members: Member;
+    'member-accounts': MemberAccount;
     'board-members': BoardMember;
     committees: Committee;
     pages: Page;
@@ -128,6 +130,24 @@ export interface Config {
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface MemberAccountAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -367,12 +387,33 @@ export interface Member {
   website?: string | null;
   description?: string | null;
   /**
+   * Shown on the member’s portal dashboard.
+   */
+  membershipStatus?: ('active' | 'pending' | 'lapsed') | null;
+  /**
    * Show in the homepage logo wall.
    */
   featured?: boolean | null;
   order?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Login accounts for the member portal.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-accounts".
+ */
+export interface MemberAccount {
+  id: number;
+  email: string;
+  name: string;
+  phone?: string | null;
+  member: number | Member;
+  status: 'active' | 'invited' | 'disabled';
+  updatedAt: string;
+  createdAt: string;
+  collection?: 'member-accounts';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

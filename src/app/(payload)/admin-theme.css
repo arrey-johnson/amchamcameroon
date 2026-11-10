@@ -1,6 +1,7 @@
 /* ─────────────────────────────────────────────────────────────────────────
    AmCham Cameroon — admin panel theme (light & dark).
    Safe overrides on top of Payload's default theme.
+   Fonts load via next/font in layout.tsx (avoid @import here — it breaks SSR hydration).
    ───────────────────────────────────────────────────────────────────────── */
 
 :root {
@@ -26,31 +27,96 @@
   border-color: var(--amcham-navy-dark);
 }
 
-/* ── Sidebar navigation — readable & well-designed in both themes ───────── */
+/* ── Sidebar — matches sleek dashboard language & style ─────────────────── */
+.nav {
+  font-family: var(--font-amcham-ui), "Segoe UI", system-ui, sans-serif;
+}
 .nav .nav__link {
-  border-radius: 8px;
-  padding-block: 8px;
-  padding-inline: 10px;
-  margin-inline: 6px;
+  border-radius: 10px;
+  padding-block: 9px;
+  padding-inline: 12px;
+  margin-inline: 8px;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: var(--theme-elevation-800); /* adapts: dark on light, light on dark */
-  transition: background 0.12s ease, color 0.12s ease;
+  letter-spacing: -0.01em;
+  color: var(--theme-elevation-800);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 .nav .nav__link:hover {
   background: var(--theme-elevation-100);
   color: var(--theme-elevation-1000);
+  transform: translateX(1px);
 }
 .nav .nav__link.active {
-  background: var(--theme-elevation-100);
-  color: var(--theme-elevation-1000);
+  background: color-mix(in srgb, var(--amcham-navy) 10%, var(--theme-elevation-50, #f4f6fb));
+  color: var(--amcham-navy);
   font-weight: 700;
   box-shadow: inset 3px 0 0 var(--amcham-red);
 }
+html[data-theme="dark"] .nav .nav__link.active {
+  background: rgba(154, 168, 255, 0.12);
+  color: #c5ceff;
+}
+.nav-group {
+  margin-top: 0.55rem;
+}
 .nav-group__label,
 .nav-group__toggle {
-  color: var(--theme-elevation-600);
+  margin-inline: 8px;
+  padding-inline: 12px;
+  color: var(--theme-elevation-500);
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.nav-group__toggle:hover {
+  color: var(--theme-elevation-800);
+}
+
+/* Dashboard / Inbox shortcuts above collection groups */
+.amcham-nav-shortcuts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.35rem 8px 0.85rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+.amcham-nav-shortcuts__link {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--theme-elevation-800);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.amcham-nav-shortcuts__link:hover {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-1000);
+  transform: translateX(1px);
+}
+.amcham-nav-shortcuts__link--inbox {
+  color: var(--amcham-navy);
+  background: color-mix(in srgb, var(--amcham-navy) 8%, transparent);
+  font-weight: 700;
+}
+html[data-theme="dark"] .amcham-nav-shortcuts__link--inbox {
+  color: #c5ceff;
+  background: rgba(154, 168, 255, 0.12);
+}
+.amcham-nav-shortcuts__link--inbox:hover {
+  background: color-mix(in srgb, var(--amcham-red) 10%, transparent);
+  color: var(--amcham-red);
+}
+.amcham-nav-shortcuts__icon {
+  display: inline-flex;
+  opacity: 0.85;
 }
 
 /* Links & focus accents */
@@ -149,288 +215,500 @@ form .amcham-password-eye {
   pointer-events: auto;
 }
 
-/* ── Dashboard + modal: shared theme tokens (built on Payload elevations) ─ */
+/* ── Dashboard + modal tokens ──────────────────────────────────────────── */
 .amcham-dash,
 .amcham-modal {
   --card: var(--theme-elevation-0, #fff);
-  --card-2: var(--theme-elevation-50, #f5f7fa);
-  --line: var(--theme-elevation-100, #e6e9f0);
-  --text: var(--theme-elevation-800, #1a1d24);
-  --muted: var(--theme-elevation-500, #8b90a0);
-  --accent: #2b39a6;
-  --accent-soft: rgba(43, 57, 166, 0.1);
-  --red: #e30613;
+  --card-2: var(--theme-elevation-50, #f4f6fb);
+  --line: var(--theme-elevation-100, rgba(15, 23, 42, 0.08));
+  --text: var(--theme-elevation-800, #0f172a);
+  --muted: var(--theme-elevation-500, #64748b);
+  --navy: var(--amcham-navy);
+  --red: var(--amcham-red);
   --red-soft: rgba(227, 6, 19, 0.1);
-  --green: #009640;
-  --green-soft: rgba(0, 150, 64, 0.12);
-  --amber: #b9770a;
-  --amber-soft: rgba(201, 138, 0, 0.14);
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 10px 26px -16px rgba(16, 24, 40, 0.22);
+  --green: #059669;
+  --green-soft: rgba(5, 150, 105, 0.12);
+  --amber: #b45309;
+  --amber-soft: rgba(180, 83, 9, 0.12);
+  --font: var(--font-amcham-ui), "Segoe UI", system-ui, sans-serif;
 }
 html[data-theme="dark"] .amcham-dash,
 html[data-theme="dark"] .amcham-modal {
-  --accent: #8ea2ff;
-  --accent-soft: rgba(142, 162, 255, 0.14);
+  --navy: #9aa8ff;
   --red: #ff6b73;
   --red-soft: rgba(255, 107, 115, 0.14);
-  --green: #3ec77e;
-  --green-soft: rgba(62, 199, 126, 0.14);
-  --amber: #f0b64a;
-  --amber-soft: rgba(240, 182, 74, 0.16);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px -18px rgba(0, 0, 0, 0.7);
+  --green: #34d399;
+  --green-soft: rgba(52, 211, 153, 0.14);
+  --amber: #fbbf24;
+  --amber-soft: rgba(251, 191, 36, 0.14);
 }
 
+/* Open canvas — same free surface as the sidebar (no boxed page background) */
 .amcham-dash {
-  margin-bottom: 1.5rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  font-family: var(--font);
+  color: var(--text);
+  background: transparent;
 }
 
-/* Header */
-.amcham-dash__head {
+@keyframes amcham-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Top bar — flush, no glass container */
+.amcham-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 1.75rem;
+  margin: 0 0 1.5rem;
+  padding: 0 0 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  animation: amcham-in 0.4s ease both;
 }
-.amcham-dash__hello {
-  margin: 0;
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--text);
-}
-.amcham-dash__date {
-  margin: 0.3rem 0 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-.amcham-dash__head-actions {
+.amcham-top__brand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.75rem;
+}
+.amcham-top__logo {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 10px;
+  background: var(--amcham-navy);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.amcham-top__kicker {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.amcham-top__title {
+  margin: 0.05rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.amcham-top__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   flex-wrap: wrap;
 }
+
 .amcham-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0.55rem 0.95rem;
+  padding: 0.5rem 0.9rem;
   border-radius: 10px;
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 600;
   text-decoration: none;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 .amcham-btn--primary {
   background: var(--amcham-red);
   color: #fff;
 }
-.amcham-btn--primary:hover {
-  background: var(--amcham-red-dark);
-}
-.amcham-btn--primary:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
+.amcham-btn--primary:hover { background: var(--amcham-red-dark); }
+.amcham-btn--primary:disabled { opacity: 0.55; cursor: default; }
 .amcham-btn--ghost {
-  background: var(--card);
+  background: transparent;
   color: var(--text);
   border-color: var(--line);
 }
 .amcham-btn--ghost:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--theme-elevation-100, var(--card-2));
 }
 .amcham-theme-toggle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0.55rem 0.85rem;
+  padding: 0.5rem 0.85rem;
   border-radius: 10px;
   border: 1px solid var(--line);
-  background: var(--card);
+  background: transparent;
   color: var(--text);
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 .amcham-theme-toggle:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--theme-elevation-100, var(--card-2));
 }
 
-/* Management sections */
-.amcham-sec {
+/* Stats — open, no marketing headline */
+.amcham-stats {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  flex-wrap: wrap;
   margin-bottom: 1.75rem;
+  animation: amcham-in 0.45s ease 0.04s both;
 }
-.amcham-sec__head {
+.amcham-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 92px;
+  padding: 0.15rem 1.15rem;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  text-decoration: none;
+  box-shadow: none;
+  transition: color 0.15s ease;
+}
+.amcham-stat:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+.amcham-stat:hover .amcham-stat__value {
+  color: var(--navy);
+}
+.amcham-stat--accent .amcham-stat__value { color: var(--red); }
+.amcham-stat__value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+.amcham-stat__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Split sections — open columns, not boxed panels */
+.amcham-split {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 2rem;
+  margin-bottom: 1.75rem;
+  animation: amcham-in 0.5s ease 0.08s both;
+}
+@media (max-width: 960px) {
+  .amcham-split {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+}
+
+.amcham-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+.amcham-card__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.85rem;
+  gap: 0.75rem;
+  padding: 0 0 0.65rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid var(--line);
 }
-.amcham-sec__title {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 0.85rem;
-  font-size: 0.72rem;
-  font-weight: 800;
+.amcham-card__title {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
-.amcham-sec__head .amcham-sec__title { margin: 0; }
-.amcham-sec__title::before {
-  content: "";
-  width: 20px;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--amcham-red);
-}
-.amcham-sec__link {
+.amcham-card__link {
   font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--accent);
+  font-weight: 600;
+  color: var(--navy);
   text-decoration: none;
 }
+.amcham-card__link:hover { color: var(--red); }
 
-/* Management tiles (the CRUD launchpad) */
-.amcham-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
-  gap: 0.75rem;
-}
-.amcham-tile {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 0.9rem 1rem;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: var(--card);
-  text-decoration: none;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-.amcham-tile:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-}
-.amcham-tile__icon {
-  display: inline-flex;
-  width: 40px;
-  height: 40px;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-.amcham-tile__body {
-  flex: 1;
-  min-width: 0;
+.amcham-actions {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  padding: 0.35rem 0 0;
 }
-.amcham-tile__label {
+.amcham-action {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.92rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 0.35rem;
+  margin: 0;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease, transform 0.15s ease, padding-left 0.15s ease;
+}
+.amcham-action:hover {
+  background: var(--theme-elevation-100, var(--card-2));
+  padding-left: 0.55rem;
+  transform: none;
+}
+.amcham-action--urgent {
+  background: var(--red-soft);
+  padding-left: 0.55rem;
+  padding-right: 0.55rem;
+}
+.amcham-action--urgent:hover {
+  background: color-mix(in srgb, var(--red) 16%, transparent);
+}
+.amcham-action__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+}
+.amcham-action__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.95rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text);
 }
-.amcham-tile__count {
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: var(--muted);
-  background: var(--card-2);
-  padding: 0 7px;
+.amcham-action__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  padding: 0 5px;
   border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 800;
 }
-.amcham-tile__hint {
-  font-size: 0.76rem;
+.amcham-action__hint {
+  font-size: 0.78rem;
   color: var(--muted);
 }
-.amcham-tile__arrow {
-  flex: none;
+.amcham-action__chev {
   color: var(--muted);
+  opacity: 0.65;
+  transition: color 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
 }
-.amcham-tile:hover .amcham-tile__arrow { color: var(--accent); }
+.amcham-action:hover .amcham-action__chev {
+  color: var(--navy);
+  opacity: 1;
+  transform: translateX(2px);
+}
 
-/* Recent submissions */
+/* Inbox — open list */
 .amcham-inbox {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--card);
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem 0 0;
 }
 .amcham-inbox__row {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.7rem 1rem;
-  border-top: 1px solid var(--line);
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 0.75rem 0.35rem;
+  margin: 0;
+  border-radius: 10px;
   text-decoration: none;
+  transition: background 0.15s ease, padding-left 0.15s ease;
 }
-.amcham-inbox__row:first-child { border-top: 0; }
-.amcham-inbox__row:hover { background: var(--card-2); }
-.amcham-inbox__dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-  flex: none;
+.amcham-inbox__row:hover {
+  background: var(--theme-elevation-100, var(--card-2));
+  padding-left: 0.55rem;
 }
-.amcham-inbox__dot--contact { background: var(--accent); }
-.amcham-inbox__dot--membership { background: var(--red); }
-.amcham-inbox__dot--subscribe { background: var(--green); }
+.amcham-inbox__row--new {
+  box-shadow: inset 3px 0 0 var(--red);
+  padding-left: 0.7rem;
+}
 .amcham-inbox__main {
-  flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
 }
 .amcham-inbox__name {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.amcham-inbox__sub {
-  font-size: 0.74rem;
+.amcham-inbox__type {
+  font-size: 0.72rem;
+  font-weight: 600;
   color: var(--muted);
 }
-.amcham-inbox__meta {
+.amcham-inbox__side {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.74rem;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex: none;
+}
+.amcham-inbox__date {
+  font-size: 0.7rem;
   color: var(--muted);
 }
 .amcham-inbox__empty {
-  padding: 1rem;
+  margin: 0.5rem 0 0;
+  padding: 0.85rem 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--muted);
   font-size: 0.85rem;
+  line-height: 1.45;
 }
-.amcham-status {
-  padding: 2px 8px;
+.amcham-pill {
+  padding: 0.15rem 0.5rem;
   border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+.amcham-pill--new { background: var(--red-soft); color: var(--red); }
+.amcham-pill--in-review { background: var(--amber-soft); color: var(--amber); }
+.amcham-pill--handled { background: var(--green-soft); color: var(--green); }
+
+/* Tips — plain inline notes */
+.amcham-tips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.35rem;
+  margin-bottom: 1.75rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  animation: amcham-in 0.5s ease 0.12s both;
+}
+.amcham-tips__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.amcham-tips__item strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Browse — open directory, same language as sidebar */
+.amcham-browse {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: amcham-in 0.55s ease 0.15s both;
+}
+.amcham-browse__head {
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--line);
+}
+.amcham-browse__title {
+  margin: 0;
   font-size: 0.68rem;
   font-weight: 700;
-  text-transform: capitalize;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
-.amcham-status--new { background: var(--accent-soft); color: var(--accent); }
-.amcham-status--in-review { background: var(--amber-soft); color: var(--amber); }
-.amcham-status--handled { background: var(--green-soft); color: var(--green); }
+.amcham-browse__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem 1.5rem;
+}
+@media (max-width: 1100px) {
+  .amcham-browse__grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 720px) {
+  .amcham-browse__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .amcham-browse__grid { grid-template-columns: 1fr; }
+}
+.amcham-browse__group {
+  margin: 0 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.amcham-browse__col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.amcham-browse__col a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.42rem 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 500;
+  transition: color 0.15s ease, padding-left 0.15s ease;
+}
+.amcham-browse__col a:hover {
+  color: var(--navy);
+  padding-left: 3px;
+}
+.amcham-browse__col em {
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.amcham-modal .amcham-btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+.amcham-modal .amcham-btn--ghost:hover {
+  background: var(--theme-elevation-100, var(--card-2));
+  color: var(--text);
+}
 
 /* ── Add-member modal ──────────────────────────────────────────────────── */
 .amcham-modal {

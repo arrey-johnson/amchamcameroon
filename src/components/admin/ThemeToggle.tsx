@@ -12,9 +12,11 @@ function currentTheme(): Theme {
 /** Light/dark switch that drives Payload's own theme (cookie + data-theme). */
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("light");
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setTheme(currentTheme());
+    setReady(true);
     // Keep the label in sync if the theme changes elsewhere (e.g. account settings).
     const observer = new MutationObserver(() => setTheme(currentTheme()));
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
@@ -34,11 +36,20 @@ export default function ThemeToggle() {
     setTheme(next);
   };
 
+  // Stable SSR markup — only show Light/Dark after mount to avoid hydration mismatch.
+  const isDark = ready && theme === "dark";
+
   return (
-    <button type="button" onClick={toggle} className="amcham-theme-toggle" aria-label="Toggle light or dark theme">
-      {theme === "dark" ? (
+    <button
+      type="button"
+      onClick={toggle}
+      className="amcham-theme-toggle"
+      aria-label="Toggle light or dark theme"
+      suppressHydrationWarning
+    >
+      {isDark ? (
         <>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="16" height="16">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="16" height="16" aria-hidden>
             <circle cx="12" cy="12" r="4" />
             <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" strokeLinecap="round" />
           </svg>
@@ -46,7 +57,7 @@ export default function ThemeToggle() {
         </>
       ) : (
         <>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="16" height="16">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="16" height="16" aria-hidden>
             <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           Dark mode

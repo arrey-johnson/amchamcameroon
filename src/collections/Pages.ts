@@ -4,11 +4,13 @@ import { revalidateTags } from "@/hooks/revalidate";
 
 export const Pages: CollectionConfig = {
   slug: "pages",
+  labels: { singular: "Page", plural: "Pages" },
   admin: {
-    group: "Content",
+    group: "Site",
     useAsTitle: "title",
     defaultColumns: ["title", "slug", "_status"],
-    description: "Static page copy (About, Mission, Benefits…) editable without code.",
+    description:
+      "Fixed website pages such as About, Mission, and membership benefits. Edit the text here — no technical changes needed.",
   },
   access: {
     read: publishedOrStaff,

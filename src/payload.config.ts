@@ -17,6 +17,7 @@ import { News } from "@/collections/News";
 import { Events } from "@/collections/Events";
 import { Newsletters } from "@/collections/Newsletters";
 import { Members } from "@/collections/Members";
+import { MemberAccounts } from "@/collections/MemberAccounts";
 import { BoardMembers } from "@/collections/BoardMembers";
 import { Committees } from "@/collections/Committees";
 import { Pages } from "@/collections/Pages";
@@ -127,21 +128,29 @@ export default buildConfig({
       },
       beforeLogin: ["@/components/admin/BeforeLogin"],
       beforeDashboard: ["@/components/admin/BeforeDashboard"],
+      beforeNavLinks: ["@/components/admin/NavShortcuts"],
     },
   },
+  // Order controls sidebar group order — keep in sync with the dashboard browse sections.
   collections: [
+    // Messages
+    Submissions,
+    // Homepage
     HeroSlides,
     TickerItems,
+    // News & media
     News,
-    Events,
     Newsletters,
-    Members,
-    BoardMembers,
-    Committees,
-    Pages,
     GalleryAlbums,
     USNews,
-    Submissions,
+    // People
+    Events,
+    Members,
+    MemberAccounts,
+    BoardMembers,
+    Committees,
+    // Site
+    Pages,
     Media,
     Users,
   ],

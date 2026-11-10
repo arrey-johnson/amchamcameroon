@@ -4,12 +4,13 @@ import { revalidateTags } from "@/hooks/revalidate";
 
 export const USNews: CollectionConfig = {
   slug: "us-news",
-  labels: { singular: "U.S. News Item", plural: "U.S. Business News" },
+  labels: { singular: "U.S. news item", plural: "U.S. news" },
   admin: {
-    group: "Pressroom",
+    group: "News & media",
     useAsTitle: "title",
     defaultColumns: ["title", "source", "publishedAt", "approved"],
-    description: "Curated U.S. trade & business headlines shown on the homepage.",
+    description:
+      "Hand-picked U.S. trade and business headlines shown on the homepage. Uncheck Approved to hide an item.",
   },
   hooks: {
     afterChange: [revalidateTags("us-news")],

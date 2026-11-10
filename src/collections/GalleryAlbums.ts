@@ -4,11 +4,12 @@ import { revalidateTags } from "@/hooks/revalidate";
 
 export const GalleryAlbums: CollectionConfig = {
   slug: "gallery-albums",
-  labels: { singular: "Photo Album", plural: "Photo Gallery" },
+  labels: { singular: "Album", plural: "Gallery" },
   admin: {
-    group: "Pressroom",
+    group: "News & media",
     useAsTitle: "title",
     defaultColumns: ["title", "date"],
+    description: "Photo albums from events and chamber activities shown in the Gallery.",
   },
   access: {
     read: anyone,

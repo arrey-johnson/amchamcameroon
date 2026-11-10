@@ -119,9 +119,9 @@ async function seed() {
       fromAddress: "AmCham Cameroon <admin@amchamcam.org>",
       adminNotifyEmail: "ed@amchamcam.org",
       autoReplyEnabled: true,
-      autoReplySubject: "Thank you for contacting AmCham Cameroon",
+      autoReplySubject: "We received your message — AmCham Cameroon",
       autoReplyBody:
-        "Dear {{name}},\n\nThank you for reaching out to AmCham Cameroon — we've received your message and will respond within 1–2 business days.\n\nBest regards,\nThe AmCham Cameroon Team",
+        "Dear {{name}},\n\nThank you for contacting AmCham Cameroon. This is an automated confirmation that we have received your inquiry.\n\nA member of our team will respond within 1–2 business days.\n\nThis mailbox is not monitored for replies. For urgent matters, email ed@amchamcam.org or call +237 677 71 37 05.\n\nBest regards,\nAmCham Cameroon",
       usNewsMode: "curated",
       stats: [
         { value: "1994", label: "Founded" },
@@ -141,9 +141,9 @@ async function seed() {
       address:
         "Suite A3, 5ᵉ étage, Immeuble Mabou (à côté de MTN),\nRue Toyota, Bonapriso, Douala, Cameroun",
       whatsappMessage: "Bonjour AmCham Cameroun, je souhaite avoir plus d'informations.",
-      autoReplySubject: "Merci d'avoir contacté AmCham Cameroun",
+      autoReplySubject: "Nous avons bien reçu votre message — AmCham Cameroun",
       autoReplyBody:
-        "Cher/Chère {{name}},\n\nMerci d'avoir contacté AmCham Cameroun — nous avons bien reçu votre message et vous répondrons sous 1 à 2 jours ouvrés.\n\nCordialement,\nL'équipe AmCham Cameroun",
+        "Cher/Chère {{name}},\n\nMerci d'avoir contacté AmCham Cameroun. Ceci est une confirmation automatique : nous avons bien reçu votre demande.\n\nUn membre de notre équipe vous répondra sous 1 à 2 jours ouvrés.\n\nCette adresse n'est pas suivie pour les réponses. Pour une urgence, écrivez à ed@amchamcam.org ou appelez le +237 677 71 37 05.\n\nCordialement,\nAmCham Cameroun",
       stats: [
         { value: "1994", label: "Fondée en" },
         { value: "~100", label: "Entreprises membres" },

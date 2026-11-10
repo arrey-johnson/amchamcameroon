@@ -4,11 +4,13 @@ import { revalidateTags } from "@/hooks/revalidate";
 
 export const Members: CollectionConfig = {
   slug: "members",
+  labels: { singular: "Member", plural: "Members" },
   admin: {
-    group: "Membership",
+    group: "People",
     useAsTitle: "name",
-    defaultColumns: ["name", "category", "sector", "featured", "order"],
-    description: "Member companies shown in the directory and homepage logo wall.",
+    defaultColumns: ["name", "category", "membershipStatus", "sector", "featured", "order"],
+    description:
+      "Member companies listed in the directory. Turn on Featured to also show their logo on the homepage. Create a Member account (People → Member accounts) so they can use the portal.",
   },
   access: {
     read: anyone,
@@ -22,8 +24,21 @@ export const Members: CollectionConfig = {
   },
   defaultSort: "order",
   fields: [
-    { name: "name", type: "text", required: true },
-    { name: "logo", type: "upload", relationTo: "media" },
+    {
+      name: "name",
+      type: "text",
+      required: true,
+      label: "Company name",
+    },
+    {
+      name: "logo",
+      type: "upload",
+      relationTo: "media",
+      label: "Company logo",
+      admin: {
+        description: "Prefer a clear logo on a transparent or white background for the directory and logo wall.",
+      },
+    },
     {
       type: "row",
       fields: [
@@ -32,6 +47,7 @@ export const Members: CollectionConfig = {
           type: "select",
           required: true,
           defaultValue: "corporate",
+          label: "Membership category",
           options: [
             { label: "Patron", value: "patron" },
             { label: "Sponsor", value: "sponsor" },
@@ -40,17 +56,62 @@ export const Members: CollectionConfig = {
             { label: "Individual", value: "individual" },
           ],
         },
-        { name: "sector", type: "text", admin: { description: "e.g. Banking, Energy, Logistics" } },
+        {
+          name: "sector",
+          type: "text",
+          label: "Sector",
+          admin: { description: "e.g. Banking, Energy, Logistics" },
+        },
       ],
     },
-    { name: "website", type: "text" },
-    { name: "description", type: "textarea", localized: true },
+    {
+      name: "website",
+      type: "text",
+      label: "Website",
+      admin: { description: "Full website address, e.g. https://example.com" },
+    },
+    {
+      name: "description",
+      type: "textarea",
+      localized: true,
+      label: "Short company description",
+      admin: { description: "Optional blurb shown in the member directory." },
+    },
+    {
+      name: "membershipStatus",
+      type: "select",
+      required: true,
+      defaultValue: "active",
+      label: "Membership status",
+      options: [
+        { label: "Active", value: "active" },
+        { label: "Pending", value: "pending" },
+        { label: "Lapsed", value: "lapsed" },
+      ],
+      admin: {
+        position: "sidebar",
+        description: "Shown on the member’s portal dashboard.",
+      },
+    },
     {
       name: "featured",
       type: "checkbox",
       defaultValue: false,
-      admin: { position: "sidebar", description: "Show in the homepage logo wall." },
+      label: "Show on homepage logo wall",
+      admin: {
+        position: "sidebar",
+        description: "Turn on to feature this member’s logo on the homepage.",
+      },
     },
-    { name: "order", type: "number", defaultValue: 0, admin: { position: "sidebar" } },
+    {
+      name: "order",
+      type: "number",
+      defaultValue: 0,
+      label: "Display order",
+      admin: {
+        position: "sidebar",
+        description: "Lower numbers appear first in lists and the logo wall.",
+      },
+    },
   ],
 };

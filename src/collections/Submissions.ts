@@ -3,11 +3,13 @@ import { anyStaff, superAdmins } from "@/access";
 
 export const Submissions: CollectionConfig = {
   slug: "submissions",
+  labels: { singular: "Message", plural: "Inbox" },
   admin: {
-    group: "Inbox",
+    group: "Messages",
     useAsTitle: "email",
     defaultColumns: ["type", "name", "email", "createdAt", "status"],
-    description: "Contact messages, membership applications and newsletter subscriptions.",
+    description:
+      "Everything submitted from the public website: contact forms, membership applications, and newsletter signups. Mark items Done after you have handled them.",
   },
   access: {
     // Created server-side via local API (overrideAccess); public API cannot write directly.
@@ -22,33 +24,47 @@ export const Submissions: CollectionConfig = {
       name: "type",
       type: "select",
       required: true,
+      label: "Message type",
       options: [
-        { label: "Contact Message", value: "contact" },
-        { label: "Membership Application", value: "membership" },
-        { label: "Newsletter Subscription", value: "subscribe" },
+        { label: "Contact message", value: "contact" },
+        { label: "Membership application", value: "membership" },
+        { label: "Newsletter subscription", value: "subscribe" },
       ],
     },
-    { name: "name", type: "text" },
-    { name: "email", type: "email", required: true },
-    { name: "phone", type: "text" },
-    { name: "company", type: "text" },
-    { name: "message", type: "textarea" },
+    { name: "name", type: "text", label: "Name" },
+    { name: "email", type: "email", required: true, label: "Email" },
+    { name: "phone", type: "text", label: "Phone" },
+    { name: "company", type: "text", label: "Company" },
+    { name: "message", type: "textarea", label: "Message" },
     {
       name: "meta",
       type: "json",
-      admin: { description: "Extra structured data (e.g. membership category, sector)." },
+      label: "Extra details",
+      admin: {
+        description: "Extra information from the form (e.g. membership category or sector), if any.",
+      },
     },
-    { name: "locale", type: "text", defaultValue: "en" },
+    {
+      name: "locale",
+      type: "text",
+      defaultValue: "en",
+      label: "Form language",
+      admin: { description: "Language the visitor used on the website (en or fr)." },
+    },
     {
       name: "status",
       type: "select",
       defaultValue: "new",
+      label: "Follow-up status",
       options: [
-        { label: "New", value: "new" },
-        { label: "In Review", value: "in-review" },
-        { label: "Handled", value: "handled" },
+        { label: "New — not reviewed yet", value: "new" },
+        { label: "In review — being handled", value: "in-review" },
+        { label: "Done — handled", value: "handled" },
       ],
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Update this as you work the inbox so the team knows what still needs attention.",
+      },
     },
   ],
 };

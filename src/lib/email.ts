@@ -30,14 +30,42 @@ export const DEFAULT_ADMIN_EMAIL = "ed@amchamcam.org";
 /** Public From address — Hostinger alias of the SMTP_USER mailbox. */
 export const DEFAULT_FROM = "AmCham Cameroon <admin@amchamcam.org>";
 
-const FALLBACK_AUTOREPLY: Record<string, { subject: string; body: string }> = {
-  en: {
-    subject: "Thank you for contacting AmCham Cameroon",
-    body: "Dear {{name}},\n\nThank you for reaching out to AmCham Cameroon — we've received your message and will respond within 1–2 business days.\n\nBest regards,\nThe AmCham Cameroon Team",
+type AutoReplyCopy = { subject: string; body: string };
+
+/** Type-specific visitor confirmations (EN / FR). Settings can override contact copy. */
+const FALLBACK_AUTOREPLY: Record<
+  SubmissionType,
+  Record<"en" | "fr", AutoReplyCopy>
+> = {
+  contact: {
+    en: {
+      subject: "We received your message — AmCham Cameroon",
+      body: "Dear {{name}},\n\nThank you for contacting AmCham Cameroon. This is an automated confirmation that we have received your inquiry.\n\nA member of our team will respond within 1–2 business days.\n\nThis mailbox is not monitored for replies. For urgent matters, email ed@amchamcam.org or call +237 677 71 37 05.\n\nBest regards,\nAmCham Cameroon",
+    },
+    fr: {
+      subject: "Nous avons bien reçu votre message — AmCham Cameroun",
+      body: "Cher/Chère {{name}},\n\nMerci d'avoir contacté AmCham Cameroun. Ceci est une confirmation automatique : nous avons bien reçu votre demande.\n\nUn membre de notre équipe vous répondra sous 1 à 2 jours ouvrés.\n\nCette adresse n'est pas suivie pour les réponses. Pour une urgence, écrivez à ed@amchamcam.org ou appelez le +237 677 71 37 05.\n\nCordialement,\nAmCham Cameroun",
+    },
   },
-  fr: {
-    subject: "Merci d'avoir contacté AmCham Cameroun",
-    body: "Cher/Chère {{name}},\n\nMerci d'avoir contacté AmCham Cameroun — nous avons bien reçu votre message et vous répondrons sous 1 à 2 jours ouvrés.\n\nCordialement,\nL'équipe AmCham Cameroun",
+  membership: {
+    en: {
+      subject: "We received your membership application — AmCham Cameroon",
+      body: "Dear {{name}},\n\nThank you for applying for membership with AmCham Cameroon. This is an automated confirmation that your application has been received.\n\nOur team will review it and contact you with next steps, typically within a few business days.\n\nThis mailbox is not monitored for replies. For questions about your application, email ed@amchamcam.org.\n\nBest regards,\nAmCham Cameroon",
+    },
+    fr: {
+      subject: "Nous avons bien reçu votre candidature — AmCham Cameroun",
+      body: "Cher/Chère {{name}},\n\nMerci d'avoir soumis une demande d'adhésion à AmCham Cameroun. Ceci est une confirmation automatique : votre candidature a bien été reçue.\n\nNotre équipe l'examinera et vous contactera pour la suite, généralement sous quelques jours ouvrés.\n\nCette adresse n'est pas suivie pour les réponses. Pour toute question, écrivez à ed@amchamcam.org.\n\nCordialement,\nAmCham Cameroun",
+    },
+  },
+  subscribe: {
+    en: {
+      subject: "You are on the AmCham Cameroon mailing list",
+      body: "Hello,\n\nThank you for subscribing. This is an automated confirmation that your email has been added to the AmCham Cameroon newsletter list.\n\nYou will receive Chamber updates and event announcements from us.\n\nThis mailbox is not monitored for replies. To unsubscribe or update your details, email ed@amchamcam.org.\n\nBest regards,\nAmCham Cameroon",
+    },
+    fr: {
+      subject: "Vous êtes inscrit(e) à la liste AmCham Cameroun",
+      body: "Bonjour,\n\nMerci pour votre inscription. Ceci est une confirmation automatique : votre adresse a été ajoutée à la liste de diffusion d'AmCham Cameroun.\n\nVous recevrez nos actualités et annonces d'événements.\n\nCette adresse n'est pas suivie pour les réponses. Pour vous désinscrire ou mettre à jour vos coordonnées, écrivez à ed@amchamcam.org.\n\nCordialement,\nAmCham Cameroun",
+    },
   },
 };
 
@@ -47,7 +75,19 @@ const TYPE_LABELS: Record<SubmissionType, string> = {
   subscribe: "Newsletter subscription",
 };
 
-function brandWrap(bodyHtml: string): string {
+function brandWrap(
+  bodyHtml: string,
+  opts?: { noReplyFooter?: boolean; locale?: string },
+): string {
+  const noReply =
+    opts?.noReplyFooter === true
+      ? `<div style="margin-top:8px;color:#8a91a0;">${
+          opts.locale === "fr"
+            ? "Message automatique — merci de ne pas répondre à cet e-mail."
+            : "Automated message — please do not reply to this email."
+        }</div>`
+      : "";
+
   return `<!doctype html>
 <html>
   <body style="margin:0;padding:0;background:#f5f7fa;font-family:Arial,Helvetica,sans-serif;color:#1a1d24;">
@@ -62,6 +102,7 @@ function brandWrap(bodyHtml: string): string {
       </div>
       <div style="background:#ffffff;border:1px solid #e6e9f0;border-top:3px solid #e30613;border-radius:0 0 12px 12px;padding:16px 28px;font-size:12px;color:#4b5160;">
         AmCham Cameroon · Bonapriso, Douala, Cameroon · <a href="https://amchamcam.org" style="color:#e30613;">amchamcam.org</a>
+        ${noReply}
       </div>
     </div>
   </body>
@@ -86,6 +127,29 @@ function resolveAdminTo(settings: Setting): string {
     settings.emails?.[0]?.email?.trim() ||
     DEFAULT_ADMIN_EMAIL
   );
+}
+
+function resolveAutoReply(
+  type: SubmissionType,
+  locale: string,
+  settings: Setting,
+  data: SubmissionData,
+): AutoReplyCopy {
+  const lang = locale === "fr" ? "fr" : "en";
+  const fallback = FALLBACK_AUTOREPLY[type][lang];
+
+  // Admin Settings text is the contact confirmation; membership/subscribe keep typed copy.
+  const useSettings = type === "contact";
+  const subject =
+    (useSettings && settings.autoReplySubject?.trim()) || fallback.subject;
+  const bodyTemplate =
+    (useSettings && settings.autoReplyBody?.trim()) || fallback.body;
+
+  const nameToken =
+    data.name?.trim() || (lang === "fr" ? "Madame, Monsieur" : "there");
+  const body = bodyTemplate.replace(/\{\{\s*name\s*\}\}/g, nameToken);
+
+  return { subject, body };
 }
 
 let smtpTransporter: Transporter | null = null;
@@ -134,6 +198,7 @@ async function sendMail(msg: OutboundMail): Promise<void> {
       headers: {
         "Auto-Submitted": "auto-generated",
         "X-Auto-Response-Suppress": "OOF, AutoReply",
+        Precedence: "auto_reply",
       },
     });
     return;
@@ -174,21 +239,26 @@ export async function sendSubmissionEmails(args: {
   const adminTo = resolveAdminTo(settings);
   const jobs: Promise<unknown>[] = [];
 
-  // 1. Visitor auto-reply (localized, template editable in admin settings).
+  // 1. Immediate visitor confirmation (no-reply style automated mail).
   if (settings.autoReplyEnabled !== false) {
-    const fallback = FALLBACK_AUTOREPLY[locale] ?? FALLBACK_AUTOREPLY.en;
-    const subject = settings.autoReplySubject || fallback.subject;
-    const bodyTemplate = settings.autoReplyBody || fallback.body;
-    const body = bodyTemplate.replace(/\{\{\s*name\s*\}\}/g, data.name || "");
+    const { subject, body } = resolveAutoReply(type, locale, settings, data);
+    const footer =
+      locale === "fr"
+        ? "\n\n—\nMessage automatique — merci de ne pas répondre à cet e-mail."
+        : "\n\n—\nAutomated message — please do not reply to this email.";
+    const text = body + footer;
     jobs.push(
       sendMail({
         from,
         to: data.email,
-        // Replies from the visitor land in the chamber inbox, not a dead mailbox.
-        replyTo: adminTo,
+        // No Reply-To on confirmations: this is a no-reply auto message.
+        // Visitors are pointed to ed@ in the body; staff still get the admin alert below.
         subject,
-        html: brandWrap(textToHtml(body)),
-        text: body,
+        html: brandWrap(textToHtml(body), {
+          noReplyFooter: true,
+          locale,
+        }),
+        text,
       }),
     );
   }

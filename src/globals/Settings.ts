@@ -4,9 +4,11 @@ import { revalidateGlobal } from "@/hooks/revalidate";
 
 export const Settings: GlobalConfig = {
   slug: "settings",
+  label: "Settings",
   admin: {
-    group: "Administration",
-    description: "Site-wide settings: contact details, floating buttons, socials, emails, SEO.",
+    group: "Site",
+    description:
+      "Contact details, WhatsApp/call buttons, social links, form notification email, homepage stats, and search-engine text.",
   },
   access: {
     read: anyone,
@@ -20,108 +22,187 @@ export const Settings: GlobalConfig = {
       type: "tabs",
       tabs: [
         {
-          label: "Contact",
+          label: "Contact details",
+          description: "Address, emails, and phones shown on the Contact page and footer.",
           fields: [
-            { name: "address", type: "textarea", localized: true },
+            {
+              name: "address",
+              type: "textarea",
+              localized: true,
+              label: "Office address",
+            },
             {
               name: "emails",
               type: "array",
-              fields: [{ name: "email", type: "email", required: true }],
+              label: "Public email addresses",
+              fields: [{ name: "email", type: "email", required: true, label: "Email" }],
             },
             {
               name: "phones",
               type: "array",
-              fields: [{ name: "phone", type: "text", required: true }],
+              label: "Public phone numbers",
+              fields: [{ name: "phone", type: "text", required: true, label: "Phone" }],
             },
             {
               name: "mapEmbedUrl",
               type: "text",
+              label: "Google Maps link",
               admin: {
                 description:
-                  "Google Maps embed URL for the contact page (AmCham office: https://maps.app.goo.gl/MfHah3ovtaYFErDFA).",
+                  "Paste the Google Maps embed or share link for the AmCham office (example share link: https://maps.app.goo.gl/MfHah3ovtaYFErDFA).",
               },
             },
           ],
         },
         {
-          label: "Floating Buttons",
+          label: "WhatsApp & call buttons",
+          description: "Floating buttons visitors see on the website.",
           fields: [
-            { name: "whatsappNumber", type: "text", admin: { description: "International format without +, e.g. 237677713705" } },
-            { name: "whatsappMessage", type: "text", localized: true },
-            { name: "callNumber", type: "text", admin: { description: "E.164 format, e.g. +237677713705" } },
+            {
+              name: "whatsappNumber",
+              type: "text",
+              label: "WhatsApp number",
+              admin: {
+                description: "Country code + number, without + or spaces. Example: 237677713705",
+              },
+            },
+            {
+              name: "whatsappMessage",
+              type: "text",
+              localized: true,
+              label: "WhatsApp starter message",
+              admin: {
+                description: "Pre-filled message when someone opens the WhatsApp chat.",
+              },
+            },
+            {
+              name: "callNumber",
+              type: "text",
+              label: "Call button number",
+              admin: {
+                description: "Include the + and country code. Example: +237677713705",
+              },
+            },
           ],
         },
         {
-          label: "Social",
+          label: "Social media",
+          description: "Links used in the website footer.",
           fields: [
-            { name: "facebook", type: "text" },
-            { name: "twitter", type: "text" },
-            { name: "linkedin", type: "text" },
-            { name: "youtube", type: "text" },
+            { name: "facebook", type: "text", label: "Facebook page URL" },
+            { name: "twitter", type: "text", label: "X / Twitter profile URL" },
+            { name: "linkedin", type: "text", label: "LinkedIn page URL" },
+            { name: "youtube", type: "text", label: "YouTube channel URL" },
           ],
         },
         {
-          label: "Email",
+          label: "Form emails",
+          description:
+            "Where website form submissions are sent, and the automated no-reply confirmation visitors receive immediately after submitting.",
           fields: [
             {
               name: "fromAddress",
               type: "text",
+              label: "From name & address",
               admin: {
                 description:
-                  "Sender shown to recipients, e.g. AmCham Cameroon <admin@amchamcam.org>. Use the Hostinger mailbox or an alias of SMTP_USER.",
+                  "How emails appear to recipients, e.g. AmCham Cameroon <admin@amchamcam.org>. Must be your Hostinger mailbox or an alias of it.",
               },
             },
             {
               name: "adminNotifyEmail",
               type: "email",
+              label: "Notify this inbox",
               admin: {
                 description:
-                  "Inbox notified on every contact form, membership application, and newsletter signup. Defaults to ed@amchamcam.org.",
+                  "Receives every contact form, membership application, and newsletter signup. Defaults to ed@amchamcam.org.",
               },
             },
-            { name: "autoReplyEnabled", type: "checkbox", defaultValue: true },
-            { name: "autoReplySubject", type: "text", localized: true },
+            {
+              name: "autoReplyEnabled",
+              type: "checkbox",
+              defaultValue: true,
+              label: "Send automated confirmation to the visitor",
+              admin: {
+                description:
+                  "When on, every contact, membership, and newsletter form instantly emails the visitor a no-reply confirmation.",
+              },
+            },
+            {
+              name: "autoReplySubject",
+              type: "text",
+              localized: true,
+              label: "Contact confirmation subject",
+              admin: {
+                description:
+                  "Subject for contact-form confirmations. Membership and newsletter use built-in copy.",
+              },
+            },
             {
               name: "autoReplyBody",
               type: "textarea",
               localized: true,
-              admin: { description: "Plain text body of the visitor auto-reply. {{name}} is replaced with the visitor's name." },
+              label: "Contact confirmation message",
+              admin: {
+                description:
+                  "Plain text for contact-form confirmations. Use {{name}} where the visitor’s name should appear. Membership and newsletter confirmations are automatic.",
+              },
             },
           ],
         },
         {
-          label: "U.S. News",
+          label: "U.S. news source",
+          description: "How the homepage U.S. business news block is filled.",
           fields: [
             {
               name: "usNewsMode",
               type: "select",
               defaultValue: "curated",
+              label: "How to fill U.S. news",
               options: [
-                { label: "Curated (hand-picked items)", value: "curated" },
-                { label: "Feed (RSS, requires approval)", value: "feed" },
+                { label: "Hand-picked items (recommended)", value: "curated" },
+                { label: "Automatic feed (needs approval)", value: "feed" },
               ],
             },
-            { name: "usNewsFeedUrl", type: "text", admin: { description: "RSS feed URL used in Feed mode." } },
+            {
+              name: "usNewsFeedUrl",
+              type: "text",
+              label: "Feed address",
+              admin: { description: "Only needed if you choose Automatic feed above." },
+            },
           ],
         },
         {
-          label: "Homepage Stats",
+          label: "Homepage numbers",
+          description: "The key figures shown on the homepage (e.g. members, events).",
           fields: [
             {
               name: "stats",
               type: "array",
+              label: "Stats",
               fields: [
-                { name: "value", type: "text", required: true },
-                { name: "label", type: "text", required: true, localized: true },
+                { name: "value", type: "text", required: true, label: "Number / value" },
+                { name: "label", type: "text", required: true, localized: true, label: "Label under the number" },
               ],
             },
           ],
         },
         {
-          label: "SEO",
+          label: "Search engines",
+          description: "Default title and description used when Google or social media shares the site.",
           fields: [
-            { name: "siteTitle", type: "text", localized: true },
-            { name: "siteDescription", type: "textarea", localized: true },
+            {
+              name: "siteTitle",
+              type: "text",
+              localized: true,
+              label: "Default website title",
+            },
+            {
+              name: "siteDescription",
+              type: "textarea",
+              localized: true,
+              label: "Default website description",
+            },
           ],
         },
       ],

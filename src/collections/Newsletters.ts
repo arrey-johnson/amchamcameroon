@@ -4,11 +4,13 @@ import { revalidateTags } from "@/hooks/revalidate";
 
 export const Newsletters: CollectionConfig = {
   slug: "newsletters",
+  labels: { singular: "Newsletter", plural: "Newsletters" },
   admin: {
-    group: "Pressroom",
+    group: "News & media",
     useAsTitle: "title",
     defaultColumns: ["title", "issueNumber", "date"],
-    description: "Newsletter archive — upload the PDF and a cover image.",
+    description:
+      "Past newsletter issues visitors can download. Upload the PDF and an optional cover image.",
   },
   access: {
     read: anyone,

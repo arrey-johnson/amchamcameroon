@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -64,9 +65,12 @@ export default async function LocaleLayout({ children, params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  const pathname = (await headers()).get("x-pathname") || "";
+  const isPortal = /(?:^|\/)(?:en|fr)\/portal(?:\/|$)/.test(pathname) || pathname.startsWith("/portal");
+
   const [settings, tickerItems, tCommon] = await Promise.all([
     getSettings(locale as AppLocale),
-    getTickerItems(locale as AppLocale),
+    isPortal ? Promise.resolve([]) : getTickerItems(locale as AppLocale),
     getTranslations({ locale, namespace: "common" }),
   ]);
 
@@ -94,28 +98,36 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} className={`${inter.variable} ${libre.variable}`}>
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-        />
+        {!isPortal && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+          />
+        )}
         <NextIntlClientProvider>
           <Suspense fallback={null}>
             <NavigationProgress />
           </Suspense>
           <RoutePrefetcher />
-          <Ticker
-            items={tickerItems.map((i) => ({ id: i.id, text: i.text, url: i.url }))}
-            latestLabel={tCommon("latest")}
-            dismissLabel={tCommon("dismiss")}
-          />
-          <Header settings={settings} />
-          <main className="flex-1">{children}</main>
-          <Footer settings={settings} />
-          <FloatingStack
-            labels={{
-              backToTop: tCommon("backToTop"),
-            }}
-          />
+          {isPortal ? (
+            <div className="flex-1">{children}</div>
+          ) : (
+            <>
+              <Ticker
+                items={tickerItems.map((i) => ({ id: i.id, text: i.text, url: i.url }))}
+                latestLabel={tCommon("latest")}
+                dismissLabel={tCommon("dismiss")}
+              />
+              <Header settings={settings} />
+              <main className="flex-1">{children}</main>
+              <Footer settings={settings} />
+              <FloatingStack
+                labels={{
+                  backToTop: tCommon("backToTop"),
+                }}
+              />
+            </>
+          )}
         </NextIntlClientProvider>
       </body>
     </html>

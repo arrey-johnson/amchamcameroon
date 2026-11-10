@@ -4,10 +4,13 @@ import { revalidateTags } from "@/hooks/revalidate";
 
 export const Events: CollectionConfig = {
   slug: "events",
+  labels: { singular: "Event", plural: "Events" },
   admin: {
-    group: "Events",
+    group: "People",
     useAsTitle: "title",
     defaultColumns: ["title", "category", "startAt", "venue", "_status"],
+    description:
+      "Conferences, networking, trainings, and other programs. Save a draft while preparing details, then Publish when the event should appear on the website.",
   },
   access: {
     read: publishedOrStaff,
@@ -21,22 +24,69 @@ export const Events: CollectionConfig = {
   },
   versions: { drafts: true },
   fields: [
-    { name: "title", type: "text", required: true, localized: true },
-    { name: "slug", type: "text", required: true, unique: true, index: true },
-    { name: "coverImage", type: "upload", relationTo: "media" },
+    {
+      name: "title",
+      type: "text",
+      required: true,
+      localized: true,
+      label: "Event name",
+    },
+    {
+      name: "slug",
+      type: "text",
+      required: true,
+      unique: true,
+      index: true,
+      label: "Web address name",
+      admin: {
+        description:
+          "Short name used in the event link (e.g. business-forum-2026). Use lowercase letters, numbers, and hyphens only.",
+      },
+    },
+    {
+      name: "coverImage",
+      type: "upload",
+      relationTo: "media",
+      label: "Cover photo",
+      admin: { description: "Main image shown on the events list and event page." },
+    },
     {
       type: "row",
       fields: [
-        { name: "startAt", type: "date", required: true, admin: { date: { pickerAppearance: "dayAndTime" } } },
-        { name: "endAt", type: "date", admin: { date: { pickerAppearance: "dayAndTime" } } },
+        {
+          name: "startAt",
+          type: "date",
+          required: true,
+          label: "Starts",
+          admin: {
+            date: { pickerAppearance: "dayAndTime" },
+            description: "Date and time the event begins.",
+          },
+        },
+        {
+          name: "endAt",
+          type: "date",
+          label: "Ends",
+          admin: {
+            date: { pickerAppearance: "dayAndTime" },
+            description: "Optional. Leave blank for a single-day or open-ended event.",
+          },
+        },
       ],
     },
-    { name: "venue", type: "text", localized: true },
+    {
+      name: "venue",
+      type: "text",
+      localized: true,
+      label: "Venue / location",
+      admin: { description: "e.g. Pullman Douala Rabingha Hotel, or Online via Zoom" },
+    },
     {
       name: "category",
       type: "select",
       required: true,
       defaultValue: "networking",
+      label: "Event type",
       options: [
         { label: "Conference", value: "conference" },
         { label: "Networking", value: "networking" },
@@ -46,24 +96,49 @@ export const Events: CollectionConfig = {
       ],
       admin: { position: "sidebar" },
     },
-    { name: "description", type: "richText", localized: true },
+    {
+      name: "description",
+      type: "richText",
+      localized: true,
+      label: "Event details",
+      admin: { description: "Full description: agenda highlights, who should attend, and practical information." },
+    },
     {
       type: "row",
       fields: [
-        { name: "priceMember", type: "text", localized: true, admin: { description: "e.g. Free / 25,000 FCFA" } },
-        { name: "priceNonMember", type: "text", localized: true },
+        {
+          name: "priceMember",
+          type: "text",
+          localized: true,
+          label: "Price for members",
+          admin: { description: "e.g. Free / 25,000 FCFA" },
+        },
+        {
+          name: "priceNonMember",
+          type: "text",
+          localized: true,
+          label: "Price for non-members",
+          admin: { description: "e.g. 50,000 FCFA" },
+        },
       ],
     },
     {
       name: "registrationUrl",
       type: "text",
-      admin: { description: "External registration link (e.g. Glue Up). Leave empty to use the contact form." },
+      label: "Registration link",
+      admin: {
+        description:
+          "External signup link (e.g. Glue Up). Leave empty if people should contact AmCham instead.",
+      },
     },
     {
       name: "gallery",
       type: "array",
-      admin: { description: "Photos from the event (shown on past events)." },
-      fields: [{ name: "image", type: "upload", relationTo: "media", required: true }],
+      label: "Event photos",
+      admin: {
+        description: "Photos from the event (especially useful after it has taken place).",
+      },
+      fields: [{ name: "image", type: "upload", relationTo: "media", required: true, label: "Photo" }],
     },
   ],
 };

@@ -24,6 +24,7 @@ export function buildNav(t: (key: string) => string): NavItem[] {
         { label: t("categories"), href: "/membership/categories" },
         { label: t("directory"), href: "/membership/directory" },
         { label: t("apply"), href: "/membership/apply" },
+        { label: t("memberLogin"), href: "/portal/login" },
       ],
     },
     { label: t("committees"), href: "/committees" },

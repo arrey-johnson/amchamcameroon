@@ -3,9 +3,11 @@ import { anyone, anyStaff, editors } from "@/access";
 
 export const Media: CollectionConfig = {
   slug: "media",
+  labels: { singular: "File", plural: "Media" },
   admin: {
-    group: "Content",
-    description: "Reusable media library: images, logos, PDFs.",
+    group: "Site",
+    description:
+      "Images, logos, and PDFs used across the website. Upload here, then attach the file when editing a page, news article, or member.",
   },
   access: {
     read: anyone,

@@ -4,11 +4,12 @@ import { revalidateTags } from "@/hooks/revalidate";
 
 export const Committees: CollectionConfig = {
   slug: "committees",
+  labels: { singular: "Committee", plural: "Committees" },
   admin: {
-    group: "About",
+    group: "People",
     useAsTitle: "name",
     defaultColumns: ["name", "chair", "order"],
-    description: "Working committees — add as many as needed.",
+    description: "Working committees shown on the website. Add or update names, chairs, and focus areas here.",
   },
   access: {
     read: anyone,

@@ -4,15 +4,15 @@ import { revalidateTags } from "@/hooks/revalidate";
 
 export const BoardMembers: CollectionConfig = {
   slug: "board-members",
-  labels: { singular: "Leadership Profile", plural: "Leadership (Board & Executive)" },
+  labels: { singular: "Leadership profile", plural: "Leadership" },
   admin: {
-    group: "About",
+    group: "People",
     useAsTitle: "name",
     defaultColumns: ["group", "photo", "name", "role", "year", "termEnd", "order"],
     groupBy: true,
     pagination: { defaultLimit: 50 },
     description:
-      "Use the section tabs above the list (Board of Directors vs Executive Office), or the Group-by control, so you edit the right people. Upload or replace portraits via Profile photo.",
+      "Board of Directors and Executive Office. Use the tabs above the list to switch sections, then edit the right people. Upload or replace portraits under Profile photo.",
     components: {
       beforeListTable: ["@/components/admin/LeadershipSectionTabs"],
     },

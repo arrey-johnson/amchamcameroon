@@ -56,6 +56,12 @@ export async function Header({ settings }: { settings: Setting }) {
             )}
           </div>
           <div className="flex items-center gap-3">
+            <Link
+              href="/portal/login"
+              className="hidden font-semibold text-white/90 transition hover:text-white sm:inline"
+            >
+              {tNav("memberLogin")}
+            </Link>
             <div className="hidden items-center gap-2.5 md:flex">
               {settings.facebook && (
                 <a href={settings.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-white">
